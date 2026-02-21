@@ -103,8 +103,10 @@ async function fetchProfile() {
             }
         }
 
-        // Mostrar Botón de Admin Global si es el usuario dueño
-        if (currentUser.username === 'User') { // TODO: Cambiar por el username real del dueño
+        // Mostrar Botón de Admin Global si es el usuario dueño o staff
+        const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
+        const { isGlobalAdmin } = await adminCheck.json();
+        if (isGlobalAdmin) {
             const adminBtn = document.getElementById("GlobalAdminNavBtn");
             if (adminBtn) adminBtn.style.display = "flex";
         }
@@ -346,6 +348,10 @@ function switchEditTab(tab) {
                 <label>Color de Acento</label>
                 <input type="color" id="AppearanceAccent" value="${currentUser.personalization?.accent || '#10b981'}" style="width:100%; height:40px; border:none; background:transparent;">
             </div>
+            <div class="InputGroup" style="margin-top:20px;">
+                <label>URL de Foto de Perfil (Avatar)</label>
+                <input type="text" id="AppearanceAvatar" value="${currentUser.personalization?.avatar || ''}" placeholder="URL de la imagen (ej: https://...)" class="AuthInput" style="padding:10px;">
+            </div>
             <button onclick="saveAppearance()" class="PrimaryBtn">Aplicar Estilo</button>
         `;
     }
@@ -496,7 +502,19 @@ async function viewUserProfile(username) {
         
         // Status Dot in Modal
         const statusColors = { online: "#10b981", idle: "#f59e0b", dnd: "#ef4444", invisible: "#94a3b8", offline: "#4b5563" };
-        avatar.innerHTML = `<div style="position:absolute; bottom:5px; right:5px; width:20px; height:20px; border-radius:50%; background:${statusColors[user.metadata?.status || 'offline']}; border:4px solid #1e1f22;"></div>`;
+        const avatarUrl = user.personalization?.avatar || "";
+        
+        if (avatarUrl) {
+            avatar.style.backgroundImage = `url('${avatarUrl}')`;
+            avatar.style.backgroundSize = "cover";
+            avatar.style.backgroundPosition = "center";
+            avatar.innerText = "";
+        } else {
+            avatar.style.backgroundImage = "none";
+            avatar.innerText = (user.display_name || user.username).charAt(0).toUpperCase();
+        }
+
+        avatar.innerHTML += `<div style="position:absolute; bottom:5px; right:5px; width:20px; height:20px; border-radius:50%; background:${statusColors[user.metadata?.status || 'offline']}; border:4px solid #1e1f22;"></div>`;
 
         elements.profileModal.style.display = "flex";
     } catch (e) {
@@ -600,6 +618,35 @@ function switchSettingsTab(tab) {
         renderBansTab();
     } else if (tab === 'srv-logs') {
         renderServerLogs();
+    }
+}
+
+async function renderServerLogs() {
+    try {
+        const res = await fetch(`/api/servers/${currentServer.id}/logs`, { headers: { "Authorization": `Bearer ${token}` } });
+        const logs = await res.json();
+        const content = document.getElementById("SettingsContent");
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2>Registro de Auditoría</h2>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Los últimos 100 eventos</div>
+            </div>
+            <div style="display:grid; gap:10px; max-height:500px; overflow-y:auto; padding-right:10px;">
+                ${logs.map(l => `
+                    <div class="LogItem" style="border-left: 3px solid var(--primary);">
+                        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-muted); margin-bottom:5px;">
+                            <span>${new Date(l.timestamp).toLocaleString()}</span>
+                            <span style="color:var(--primary); font-weight:800; background:rgba(16,185,129,0.1); padding:2px 6px; border-radius:4px;">${l.type}</span>
+                        </div>
+                        <div style="font-size:0.8rem; line-height:1.4; color:#fff;">
+                            ${formatLogDetails(l)}
+                        </div>
+                    </div>
+                `).join("") || "<div style='color:var(--text-muted); padding:40px; text-align:center;'>No hay actividad registrada en este servidor.</div>"}
+            </div>
+        `;
+    } catch (e) {
+        showToast("Error al cargar logs", "error");
     }
 }
 
@@ -1423,26 +1470,66 @@ async function globalBanUser(username) {
     );
 }
 
+async function globalWarnUser(username) {
+    openActionModal(
+        `Advertencia Global: @${username}`,
+        "El usuario recibirá una notificación de advertencia de la plataforma.",
+        "Enviar Aviso",
+        async (reason) => {
+            const res = await fetch("/api/admin/global-warn", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ username, reason })
+            });
+            if (res.ok) showToast(`Aviso global enviado a @${username}`, "info");
+        },
+        true,
+        "Motivo"
+    );
+}
+
+async function setStaffMember(username, isAdmin) {
+    const res = await fetch("/api/admin/set-staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ username, isAdmin })
+    });
+    if (res.ok) {
+        showToast(`Estado de Staff actualizado para @${username}`, "success");
+        showAdminPanel(); // Refresh
+    }
+}
+
 function showAdminPanel() {
     currentServer = null; 
     currentTarget = null;
-    elements.chatHeader.innerText = "Panel de Administración Global";
+    elements.chatHeader.innerText = "Panel de Control Maestro (Discord Corp Style)";
     elements.messageList.innerHTML = `
         <div style="padding: 20px;">
-            <h2 style="color:var(--primary); text-shadow: 0 0 10px var(--primary);">Panel de Control Maestro</h2>
-            <p style="color: var(--text-muted); margin-bottom: 20px;">Desde aquí puedes controlar toda la plataforma NeutroLink.</p>
+            <h2 style="color:var(--primary); text-shadow: 0 0 10px var(--primary);">Administración Superior NeutroLink</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Poder absoluto sobre la infraestructura y usuarios.</p>
             
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
                 <div class="LogItem" style="background:rgba(239, 68, 68, 0.05); border: 2px solid #ef4444; border-radius: 12px; padding: 20px;">
                     <h3 style="color:#ef4444;">Baneo Global</h3>
-                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Prohibe el acceso total a un usuario por su nombre de forma inmediata.</p>
-                    <button class="PrimaryBtn" style="background:#ef4444; color:#fff; width:100%;" onclick="openActionModal('Baneo Global', 'Introduce el username exacto', 'Banear', (u) => globalBanUser(u), true, 'Username')">Banear Usuario</button>
+                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Elimina a un usuario de toda la plataforma de forma permanente.</p>
+                    <button class="PrimaryBtn" style="background:#ef4444; color:#fff; width:100%; border-radius:8px;" onclick="openActionModal('Baneo Global', 'Introduce el username exacto', 'Banear', (u) => globalBanUser(u), true, 'Username')">Ejecutar Ban</button>
                 </div>
                 
-                <div class="LogItem" style="background:rgba(16, 185, 129, 0.05); border: 2px solid #10b981; border-radius: 12px; padding: 20px;">
-                    <h3 style="color:#10b981;">Anuncio Global</h3>
-                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Envía un mensaje a todos los sistemas o logs para avisos importantes.</p>
-                    <button class="PrimaryBtn" style="background:#10b981; color:#fff; width:100%; transition: scale 0.2s;" onclick="showToast('Sistema de anuncios en fase final', 'info')">Notificar a todos</button>
+                <div class="LogItem" style="background:rgba(245, 158, 11, 0.05); border: 2px solid #f59e0b; border-radius: 12px; padding: 20px;">
+                    <h3 style="color:#f59e0b;">Advertencia Global</h3>
+                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Envía un aviso oficial a cualquier usuario por mal comportamiento.</p>
+                    <button class="PrimaryBtn" style="background:#f59e0b; color:#fff; width:100%; border-radius:8px;" onclick="openActionModal('Advertencia Global', 'Introduce el username', 'Advertir', (u) => globalWarnUser(u), true, 'Username')">Enviar Aviso</button>
+                </div>
+
+                <div class="LogItem" style="background:rgba(16, 185, 129, 0.05); border: 2px solid #10b981; border-radius: 12px; padding: 20px; grid-column: 1 / -1;">
+                    <h3 style="color:#10b981;">Gestionar Staff de Confianza</h3>
+                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Asigna o retira poderes de administración global a otros usuarios.</p>
+                    <div style="display:flex; gap:10px; margin-top:15px;">
+                        <input type="text" id="StaffTargetInput" placeholder="Username del futuro Staff" class="AuthInput" style="flex:1;">
+                        <button class="PrimaryBtn" style="background:#10b981; color:#000; padding:0 20px;" onclick="setStaffMember(document.getElementById('StaffTargetInput').value, true)">Añadir Staff</button>
+                        <button class="DangerBtn" style="background:#ef4444; color:#fff; padding:0 20px;" onclick="setStaffMember(document.getElementById('StaffTargetInput').value, false)">Quitar Staff</button>
+                    </div>
                 </div>
             </div>
         </div>

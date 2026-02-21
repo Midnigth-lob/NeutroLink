@@ -50,8 +50,11 @@ const UserSchema = new mongoose.Schema({
     },
     personalization: {
         theme: { type: String, default: "dark" },
-        accent: { type: String, default: "#10b981" }
+        accent: { type: String, default: "#10b981" },
+        banner: { type: String },
+        avatar: { type: String }
     },
+    isGlobalAdmin: { type: Boolean, default: false },
     sessions: [{
         id: String,
         ip: String,
@@ -145,7 +148,6 @@ const Log = mongoose.model("Log", LogSchema);
 // In-memory signaling for calls (Production should use WebSockets/Redis)
 const callSignals = new Map();
 
-// --- Helpers ---
 async function logEvent(type, details) {
     try {
         const logEntry = {
@@ -153,11 +155,12 @@ async function logEvent(type, details) {
             type,
             ...details
         };
-        console.log("LOG:", JSON.stringify(logEntry, null, 2));
         const newLog = new Log(logEntry);
         await newLog.save();
+        
+        // Mantener solo los últimos 1000 logs globales (opcional)
         const count = await Log.countDocuments();
-        if (count > 1000) {
+        if (count > 10000) {
             await Log.findOneAndDelete({}, { sort: { timestamp: 1 } });
         }
     } catch (err) {
@@ -449,23 +452,18 @@ app.get("/api/profile/v/:username", verifyToken, async (req, res) => {
     const canSeeProfile = privacy.see_profile === "all" || (privacy.see_profile === "friends" && isFriend);
     const canSeeStatus = privacy.see_status === "all" || (privacy.see_status === "friends" && isFriend);
 
-    if (!canSeeProfile) {
-        return res.json({
-            username: targetUser.username,
-            display_name: targetUser.display_name || targetUser.username,
-            bio: "Perfil privado",
-            isPrivate: true,
-            metadata: { status: canSeeStatus ? targetUser.metadata.status : "offline" }
-        });
-    }
-
-    res.json({ 
+    res.json({
         username: targetUser.username,
-        display_name: targetUser.display_name || targetUser.username,
-        bio: targetUser.bio || "",
+        display_name: canSeeProfile ? (targetUser.display_name || targetUser.username) : "Usuario Privado",
+        bio: canSeeProfile ? (targetUser.bio || "") : "La biografía es privada",
         metadata: {
-            ...targetUser.metadata,
-            status: canSeeStatus ? targetUser.metadata.status : "offline"
+            status: canSeeStatus ? (targetUser.metadata?.status || "offline") : "offline",
+            tier: targetUser.metadata?.tier || "BASIC"
+        },
+        personalization: {
+            accent: targetUser.personalization?.accent || "#10b981",
+            banner: canSeeProfile ? targetUser.personalization?.banner : null,
+            avatar: canSeeProfile ? targetUser.personalization?.avatar : null
         }
     });
 });
@@ -1026,6 +1024,11 @@ app.post("/api/servers/:serverId/members/:username/warn", verifyToken, checkPerm
     }
 });
 
+app.get("/api/admin/check", verifyToken, async (req, res) => {
+    const user = await User.findOne({ username: req.user.username });
+    res.json({ isGlobalAdmin: !!user?.isGlobalAdmin });
+});
+
 // Endpoints de LOGS del servidor
 app.get("/api/servers/:serverId/logs", verifyToken, checkPerm(PERMS.ADMINISTRATOR), async (req, res) => {
     try {
@@ -1040,8 +1043,7 @@ app.get("/api/servers/:serverId/logs", verifyToken, checkPerm(PERMS.ADMINISTRATO
 // Solo el creador original o admin puede usar esto
 const IS_GLOBAL_ADMIN = async (req, res, next) => {
     const user = await User.findOne({ username: req.user.username });
-    // Por ahora, el primer usuario o alguien con tier PLATINUM y flag especial
-    if (user && (user.username === 'User' || user.metadata?.tier === 'PLATINUM')) { // Ajustar según conveniencia
+    if (user && (user.username === 'User' || user.isGlobalAdmin)) {
         return next();
     }
     res.status(403).json({ error: "Acceso denegado: Solo para Administración Global" });
@@ -1050,7 +1052,36 @@ const IS_GLOBAL_ADMIN = async (req, res, next) => {
 app.post("/api/admin/global-ban", verifyToken, IS_GLOBAL_ADMIN, async (req, res) => {
     const { username, reason } = req.body;
     await User.findOneAndUpdate({ username }, { $set: { isBanned: true, banReason: reason } });
+    await logEvent("GLOBAL_BAN", { targetUser: username, moderator: req.user.username, reason });
     res.json({ message: `Usuario @${username} baneado de la plataforma.` });
+});
+
+app.post("/api/admin/global-warn", verifyToken, IS_GLOBAL_ADMIN, async (req, res) => {
+    const { username, reason } = req.body;
+    await User.findOneAndUpdate(
+        { username },
+        { 
+            $push: { 
+                warnings: { 
+                    reason, 
+                    date: new Date().toISOString(), 
+                    givenBy: `GLOBAL_MOD_${req.user.username}` 
+                } 
+            } 
+        }
+    );
+    await logEvent("GLOBAL_WARN", { targetUser: username, moderator: req.user.username, reason });
+    res.json({ message: `Advertencia global enviada a @${username}.` });
+});
+
+app.post("/api/admin/set-staff", verifyToken, async (req, res) => {
+    // Solo el Maestro original 'User' puede delegar
+    if (req.user.username !== 'User') return res.status(403).json({ error: "Solo el Maestro puede delegar poderes." });
+    
+    const { username, isAdmin } = req.body;
+    await User.findOneAndUpdate({ username }, { $set: { isGlobalAdmin: !!isAdmin } });
+    await logEvent("STAFF_UPDATE", { targetUser: username, updatedBy: req.user.username, isAdmin });
+    res.json({ message: `Permisos de staff actualizados para @${username}.` });
 });
 
 // MODERACIÓN: Mute
