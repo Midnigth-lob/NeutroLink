@@ -1026,7 +1026,7 @@ app.post("/api/servers/:serverId/members/:username/warn", verifyToken, checkPerm
 
 app.get("/api/admin/check", verifyToken, async (req, res) => {
     const user = await User.findOne({ username: req.user.username });
-    const isGlobal = (user && user.isGlobalAdmin) || (req.user.username.toLowerCase() === 'user');
+    const isGlobal = (user && user.isGlobalAdmin) || (req.user.username.toLowerCase() === 'dark');
     res.json({ isGlobalAdmin: !!isGlobal });
 });
 
@@ -1044,7 +1044,7 @@ app.get("/api/servers/:serverId/logs", verifyToken, checkPerm(PERMS.ADMINISTRATO
 // Solo el creador original o admin puede usar esto
 const IS_GLOBAL_ADMIN = async (req, res, next) => {
     const user = await User.findOne({ username: req.user.username });
-    if (user && (user.username === 'User' || user.isGlobalAdmin)) {
+    if (user && (user.username.toLowerCase() === 'dark' || user.isGlobalAdmin)) {
         return next();
     }
     res.status(403).json({ error: "Acceso denegado: Solo para Administración Global" });
@@ -1076,8 +1076,8 @@ app.post("/api/admin/global-warn", verifyToken, IS_GLOBAL_ADMIN, async (req, res
 });
 
 app.post("/api/admin/set-staff", verifyToken, async (req, res) => {
-    // Solo el Maestro original 'User' puede delegar
-    if (req.user.username !== 'User') return res.status(403).json({ error: "Solo el Maestro puede delegar poderes." });
+    // Solo el Maestro original 'Dark' puede delegar
+    if (req.user.username.toLowerCase() !== 'dark') return res.status(403).json({ error: "Solo el Maestro puede delegar poderes." });
     
     const { username, isAdmin } = req.body;
     await User.findOneAndUpdate({ username }, { $set: { isGlobalAdmin: !!isAdmin } });

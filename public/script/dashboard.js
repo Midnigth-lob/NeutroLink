@@ -121,7 +121,7 @@ async function fetchProfile() {
 
         // Mostrar Botón de Admin Global si es el usuario dueño o staff
         try {
-            const isAdminByUsername = currentUser.username.toLowerCase() === 'user';
+            const isAdminByUsername = currentUser.username.toLowerCase() === 'dark';
             const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
             if (adminCheck.ok) {
                 const data = await adminCheck.json();
@@ -139,7 +139,7 @@ async function fetchProfile() {
         } catch (adminErr) {
             console.warn("Global admin check failed, skipping shield icon.", adminErr);
             // Fallback nuclear
-            if (currentUser.username.toLowerCase() === 'user') {
+            if (currentUser.username.toLowerCase() === 'dark') {
                 isGlobalAdminUser = true;
                 const adminBtn = document.getElementById("GlobalAdminNavBtn");
                 if (adminBtn) adminBtn.style.display = "flex";
