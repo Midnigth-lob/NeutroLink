@@ -346,9 +346,10 @@ function switchEditTab(tab) {
 }
 
 async function selectBanner(banner) {
-    currentUser.personalization = currentUser.personalization || {};
+    if (!currentUser.personalization) currentUser.personalization = {};
     currentUser.personalization.banner = banner;
     await saveAppearance();
+    switchEditTab('profile-appearance');
 }
 
 async function saveProfile() {
@@ -1117,9 +1118,9 @@ async function sendMessage() {
     if (!text || !currentTarget) return;
     elements.chatInput.value = "";
     
-    // CORRECCIÓN: Enviar channelId si estamos en un canal
+    // CORRECCIÓN: Enviar channelId si estamos en un canal, y el targetId debe ser el del servidor
     const body = { 
-        targetId: currentTarget.id, 
+        targetId: currentTarget.type === 'channel' ? currentServer.id : currentTarget.id, 
         targetType: currentTarget.type === 'channel' ? 'server' : 'friend',
         channelId: currentTarget.type === 'channel' ? currentTarget.id : null,
         text 

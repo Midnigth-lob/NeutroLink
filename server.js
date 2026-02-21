@@ -845,8 +845,10 @@ app.delete("/api/servers/:serverId/roles/:roleId", verifyToken, checkPerm(PERMS.
         await Server.findOneAndUpdate(
             { id: serverId },
             { 
-                $pull: { roles: { id: roleId } },
-                $set: { "members.$[].roles": { $filter: { input: "$members.roles", as: "r", cond: { $ne: ["$$r", roleId] } } } }
+                $pull: { 
+                    roles: { id: roleId },
+                    "members.$[].roles": roleId
+                }
             }
         );
         
