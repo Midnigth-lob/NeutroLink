@@ -69,7 +69,7 @@ const ServerSchema = new mongoose.Schema({
     channels: [{
         id: String,
         name: String,
-        type: String
+        type: { type: String }
     }],
     members: [{
         username: String,
