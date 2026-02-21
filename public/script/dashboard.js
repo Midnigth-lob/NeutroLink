@@ -82,10 +82,25 @@ async function fetchProfile() {
         const selector = document.getElementById("StatusSelector");
         if (selector) selector.value = currentUser.metadata?.status || "online";
 
+        // Tier Badge Logic Mejorada
         const badge = document.getElementById("userTierBadge");
-        if (currentUser.metadata?.tier && currentUser.metadata.tier !== "BASIC") {
-            badge.innerText = currentUser.metadata.tier;
-            badge.style.display = "block";
+        if (badge) {
+            const tier = currentUser.metadata?.tier || "BASIC";
+            if (tier === "PREMIUM") {
+                badge.innerText = "PREMIUM";
+                badge.style.display = "inline-block";
+                badge.style.background = "var(--primary)";
+                badge.style.color = "#000";
+            } else if (tier === "PLATINUM") {
+                badge.innerText = "PLATINUM";
+                badge.style.display = "inline-block";
+                badge.style.background = "linear-gradient(135deg, #6366f1, #a855f7)";
+                badge.style.color = "#fff";
+                badge.style.fontWeight = "800";
+                badge.style.boxShadow = "0 0 10px rgba(168, 85, 247, 0.5)";
+            } else {
+                badge.style.display = "none";
+            }
         }
     } catch (e) { console.error("Profile fetch failed", e); }
 }
@@ -459,10 +474,11 @@ async function viewUserProfile(username) {
             banner.style.backgroundPosition = "center";
         }
 
-        document.getElementById("ProfileDisplayName").innerText = user.display_name;
+        document.getElementById("ProfileDisplayName").innerText = user.display_name || user.username;
         document.getElementById("ProfileUsername").innerText = `@${user.username}`;
         document.getElementById("ProfileBio").innerText = user.bio || "Este usuario prefiere mantener su bio en privado.";
         document.getElementById("ProfileEditBtn").style.display = (username === currentUser.username) ? "block" : "none";
+        document.getElementById("ProfileCallBtn").style.display = (username !== currentUser.username) ? "block" : "none";
         
         // Status Dot in Modal
         const statusColors = { online: "#10b981", idle: "#f59e0b", dnd: "#ef4444", invisible: "#94a3b8", offline: "#4b5563" };
@@ -1187,14 +1203,21 @@ async function createChannel(name) {
 }
 
 async function createServer(name) {
-    const res = await fetch("/api/servers", { 
-        method: "POST", 
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, 
-        body: JSON.stringify({ name }) 
-    });
-    if (res.ok) {
-        showToast(`Servidor ${name} creado`, "success");
-        loadServers();
+    try {
+        const res = await fetch("/api/servers", { 
+            method: "POST", 
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }, 
+            body: JSON.stringify({ name }) 
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(`Servidor "${name}" creado con éxito`, "success");
+            loadServers();
+        } else {
+            showToast(data.error || "Error al crear servidor", "error");
+        }
+    } catch (e) {
+        showToast("Error de conexión al crear servidor", "error");
     }
 }
 
@@ -1212,3 +1235,98 @@ async function joinServer(code) {
         showToast(err.error || "Código inválido", "error");
     }
 }
+
+// --- SISTEMA DE LLAMADAS WebRTC "SUPER POTENTE" ---
+let localStream;
+let peerConnection;
+const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+async function initCall(targetUser) {
+    try {
+        const overlay = document.getElementById("CallOverlay");
+        overlay.style.display = "flex";
+        
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("localVideo").srcObject = localStream;
+        
+        setupPeerConnection(targetUser);
+        
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        await sendCallSignal(targetUser, offer);
+        showToast(`Llamando a @${targetUser}...`, "info");
+    } catch (err) {
+        showToast("No se pudo acceder a la cámara/micro", "error");
+        closeCall();
+    }
+}
+
+function setupPeerConnection(targetUser) {
+    peerConnection = new RTCPeerConnection(rtcConfig);
+    
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+    
+    peerConnection.ontrack = (event) => {
+        document.getElementById("remoteVideo").srcObject = event.streams[0];
+        document.getElementById("remoteName").innerText = targetUser;
+    };
+    
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            sendCallSignal(targetUser, { type: 'candidate', candidate: event.candidate });
+        }
+    };
+}
+
+async function sendCallSignal(target, signal) {
+    await fetch("/api/calls/signal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ target, signal })
+    });
+}
+
+async function pollCallSignals() {
+    if (!token) return;
+    try {
+        const res = await fetch("/api/calls/signal", { headers: { "Authorization": `Bearer ${token}` } });
+        const signals = await res.json();
+        for (const s of signals) {
+            await handleCallSignal(s);
+        }
+    } catch (e) {}
+    setTimeout(pollCallSignals, 3000);
+}
+
+async function handleCallSignal(data) {
+    const { from, signal } = data;
+    
+    if (signal.type === 'offer') {
+        if (confirm(`Videollamada entrante de @${from}. ¿Aceptar?`)) {
+            const overlay = document.getElementById("CallOverlay");
+            overlay.style.display = "flex";
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            document.getElementById("localVideo").srcObject = localStream;
+            
+            setupPeerConnection(from);
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await sendCallSignal(from, answer);
+        }
+    } else if (signal.type === 'answer') {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+    } else if (signal.type === 'candidate') {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+    }
+}
+
+function closeCall() {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (peerConnection) peerConnection.close();
+    document.getElementById("CallOverlay").style.display = "none";
+}
+
+document.getElementById("HangupBtn").onclick = closeCall;
+pollCallSignals();

@@ -1,119 +1,252 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
     <title>NeutroLink | Dashboard</title>
-</head>
-<body class="DashboardLayout">
+  </head>
+  <body class="DashboardLayout">
     <!-- Server Rail (Left) -->
     <nav class="ServerRail">
-        <div class="ServerIcon active" title="Home">H</div>
-        <div class="ServerDivider"></div>
-        <div id="ServerList">
-            <!-- Dynamic Servers -->
-        </div>
-        <div class="ServerIcon" id="AddServerBtn" title="Crear Servidor">+</div>
-        <div class="ServerIcon" id="JoinServerBtn" title="Unirse por Invitación">🔗</div>
+      <div class="ServerIcon active" title="Home">H</div>
+      <div class="ServerDivider"></div>
+      <div id="ServerList">
+        <!-- Dynamic Servers -->
+      </div>
+      <div class="ServerIcon" id="AddServerBtn" title="Crear Servidor">+</div>
+      <div class="ServerIcon" id="JoinServerBtn" title="Unirse por Invitación">
+        🔗
+      </div>
     </nav>
 
     <!-- Sidebar (Middle) -->
     <aside class="Sidebar">
-        <header class="SidebarHeader">NeutroLink Hub</header>
-        
-        <div class="SidebarContent">
-            <div class="SidebarGroup">
-                <div class="SidebarLabel" id="ChannelHeaderGroup" style="display:none; justify-content: space-between; align-items: center;">
-                    <span id="ActiveServerName">Canales</span>
-                    <div style="display:flex; gap: 8px;">
-                        <span id="AddChannelBtn" style="cursor:pointer" title="Crear canal">+</span>
-                        <span id="ServerSettingsBtn" style="cursor:pointer; display:none;" onclick="openServerSettings()" title="Ajustes del servidor">⚙️</span>
-                    </div>
-                </div>
-                <div id="ChannelList">
-                    <!-- Dynamic Channels -->
-                </div>
-            </div>
+      <header class="SidebarHeader">NeutroLink Hub</header>
 
-            <div class="SidebarGroup">
-                <div class="SidebarLabel">Amigos <span id="AddFriendBtn" style="cursor:pointer">+</span></div>
-                <div id="FriendsList">
-                    <!-- Dynamic Friends -->
-                </div>
+      <div class="SidebarContent">
+        <div class="SidebarGroup">
+          <div
+            class="SidebarLabel"
+            id="ChannelHeaderGroup"
+            style="
+              display: none;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span id="ActiveServerName">Canales</span>
+            <div style="display: flex; gap: 8px">
+              <span
+                id="AddChannelBtn"
+                style="cursor: pointer"
+                title="Crear canal"
+                >+</span
+              >
+              <span
+                id="ServerSettingsBtn"
+                style="cursor: pointer; display: none"
+                onclick="openServerSettings()"
+                title="Ajustes del servidor"
+                >⚙️</span
+              >
             </div>
-
-            <div class="SidebarGroup">
-                <div class="SidebarLabel">Búsqueda</div>
-                <input type="text" id="UserSearch" placeholder="Buscar usuarios..." style="font-size: 0.8rem; padding: 0.5rem;">
-                <div id="SearchResults" class="SidebarContent" style="padding: 0.5rem 0;"></div>
-            </div>
+          </div>
+          <div id="ChannelList">
+            <!-- Dynamic Channels -->
+          </div>
         </div>
 
-        <section class="UserSection">
-            <div style="position:relative;">
-                <div class="UserAvatar"></div>
-                <div id="selfStatusDot" style="position:absolute; bottom:0; right:0; width:12px; height:12px; border-radius:50%; background:#10b981; border:2px solid #1e1f22;"></div>
+        <div class="SidebarGroup">
+          <div class="SidebarLabel">
+            Amigos <span id="AddFriendBtn" style="cursor: pointer">+</span>
+          </div>
+          <div id="FriendsList">
+            <!-- Dynamic Friends -->
+          </div>
+        </div>
+
+        <div class="SidebarGroup">
+          <div class="SidebarLabel">Búsqueda</div>
+          <input
+            type="text"
+            id="UserSearch"
+            placeholder="Buscar usuarios..."
+            style="font-size: 0.8rem; padding: 0.5rem"
+          />
+          <div
+            id="SearchResults"
+            class="SidebarContent"
+            style="padding: 0.5rem 0"
+          ></div>
+        </div>
+      </div>
+
+      <section class="UserSection">
+        <div style="position: relative">
+          <div class="UserAvatar"></div>
+          <div
+            id="selfStatusDot"
+            style="
+              position: absolute;
+              bottom: 0;
+              right: 0;
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background: #10b981;
+              border: 2px solid #1e1f22;
+            "
+          ></div>
+        </div>
+        <div class="UserInfo">
+          <div style="display: flex; align-items: center">
+            <div
+              id="usernameDisplay"
+              style="font-weight: 600; font-size: 0.9rem"
+            >
+              Cargando...
             </div>
-            <div class="UserInfo">
-                <div style="display: flex; align-items: center;">
-                    <div id="usernameDisplay" style="font-weight:600; font-size: 0.9rem;">Cargando...</div>
-                    <span id="userTierBadge" style="font-size:0.55rem; margin-left:6px; padding:1px 5px; border-radius:3px; background:var(--primary); color:#000; font-weight:800; display:none; text-transform: uppercase;">PREMIUM</span>
-                </div>
-                <select id="StatusSelector" style="font-size: 0.7rem; background: transparent; border: none; color: var(--text-muted); padding: 0; width: auto; cursor:pointer;">
-                    <option value="online">🟢 En línea</option>
-                    <option value="idle">🌙 Ausente</option>
-                    <option value="dnd">🔴 No molestar</option>
-                    <option value="invisible">🔘 Invisible</option>
-                </select>
-            </div>
-            <button id="DonateBtn" style="width: auto; padding: 4px; background: transparent; color: var(--primary); font-size: 1rem; cursor:pointer;" onclick="location.href='/payment.html'" title="Donar/Boost">⚡</button>
-            <button id="LogoutBtn" style="width: auto; padding: 4px; background: transparent; color: var(--text-muted); cursor:pointer;" onclick="logout()" title="Cerrar Sesión">❌</button>
-        </section>
+            <span
+              id="userTierBadge"
+              style="
+                font-size: 0.55rem;
+                margin-left: 6px;
+                padding: 1px 5px;
+                border-radius: 3px;
+                background: var(--primary);
+                color: #000;
+                font-weight: 800;
+                display: none;
+                text-transform: uppercase;
+              "
+              >PREMIUM</span
+            >
+          </div>
+          <select
+            id="StatusSelector"
+            style="
+              font-size: 0.7rem;
+              background: transparent;
+              border: none;
+              color: var(--text-muted);
+              padding: 0;
+              width: auto;
+              cursor: pointer;
+            "
+          >
+            <option value="online">🟢 En línea</option>
+            <option value="idle">🌙 Ausente</option>
+            <option value="dnd">🔴 No molestar</option>
+            <option value="invisible">🔘 Invisible</option>
+          </select>
+        </div>
+        <button
+          id="DonateBtn"
+          style="
+            width: auto;
+            padding: 4px;
+            background: transparent;
+            color: var(--primary);
+            font-size: 1rem;
+            cursor: pointer;
+          "
+          onclick="location.href = '/payment.html'"
+          title="Donar/Boost"
+        >
+          ⚡
+        </button>
+        <button
+          id="LogoutBtn"
+          style="
+            width: auto;
+            padding: 4px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+          "
+          onclick="logout()"
+          title="Cerrar Sesión"
+        >
+          ❌
+        </button>
+      </section>
     </aside>
 
     <!-- Chat Area (Right) -->
     <main class="ChatArea">
-        <header class="ChatHeader" id="ChatTargetName"># Selección de servidor</header>
-        
-        <div class="MessageList" id="MessageList">
-            <div style="text-align:center; color: var(--text-muted); margin-top: 2rem;">
-                Selecciona un amigo o un servidor para empezar a chatear.
-            </div>
-        </div>
+      <header class="ChatHeader" id="ChatTargetName">
+        # Selección de servidor
+      </header>
 
-        <div class="ChatInputArea">
-            <div class="ChatInputWrapper">
-                <input type="text" id="ChatMessageInput" placeholder="Enviar mensaje...">
-                <button id="SendMessageBtn" style="width:auto; padding: 0 1rem;">Enviar</button>
-            </div>
+      <div class="MessageList" id="MessageList">
+        <div
+          style="text-align: center; color: var(--text-muted); margin-top: 2rem"
+        >
+          Selecciona un amigo o un servidor para empezar a chatear.
         </div>
+      </div>
+
+      <div class="ChatInputArea">
+        <div class="ChatInputWrapper">
+          <input
+            type="text"
+            id="ChatMessageInput"
+            placeholder="Enviar mensaje..."
+          />
+          <button id="SendMessageBtn" style="width: auto; padding: 0 1rem">
+            Enviar
+          </button>
+        </div>
+      </div>
     </main>
-    
+
     <!-- Member List (Discord-Style) -->
-    <aside class="MemberListSide" id="MemberListSide" style="display:none;">
-        <div class="MemberListHeader">Miembros</div>
-        <div id="MemberListContent"></div>
+    <aside class="MemberListSide" id="MemberListSide" style="display: none">
+      <div class="MemberListHeader">Miembros</div>
+      <div id="MemberListContent"></div>
     </aside>
 
     <!-- Call Overlay -->
     <div id="CallOverlay">
-        <div class="VideoGrid">
-            <div class="VideoContainer">
-                <video id="localVideo" autoplay muted playsinline></video>
-                <div style="position:absolute; bottom:10px; left:10px; font-size: 0.8rem;">Tú</div>
-            </div>
-            <div class="VideoContainer">
-                <video id="remoteVideo" autoplay playsinline></video>
-                <div style="position:absolute; bottom:10px; left:10px; font-size: 0.8rem;" id="remoteName">Remoto</div>
-            </div>
+      <div class="VideoGrid">
+        <div class="VideoContainer">
+          <video id="localVideo" autoplay muted playsinline></video>
+          <div
+            style="
+              position: absolute;
+              bottom: 10px;
+              left: 10px;
+              font-size: 0.8rem;
+            "
+          >
+            Tú
+          </div>
         </div>
-        <div class="CallControls">
-            <div class="ControlCircle" id="ToggleMic">🎙️</div>
-            <div class="ControlCircle" id="ToggleCam">📹</div>
-            <div class="ControlCircle hangup" id="HangupBtn">📞</div>
+        <div class="VideoContainer">
+          <video id="remoteVideo" autoplay playsinline></video>
+          <div
+            style="
+              position: absolute;
+              bottom: 10px;
+              left: 10px;
+              font-size: 0.8rem;
+            "
+            id="remoteName"
+          >
+            Remoto
+          </div>
         </div>
+      </div>
+      <div class="CallControls">
+        <div class="ControlCircle" id="ToggleMic">🎙️</div>
+        <div class="ControlCircle" id="ToggleCam">📹</div>
+        <div class="ControlCircle hangup" id="HangupBtn">📞</div>
+      </div>
     </div>
 
     <!-- SISTEMA DE NOTIFICACIONES -->
@@ -121,76 +254,310 @@
 
     <!-- MODAL DE AJUSTES DE SERVIDOR (V6.0) -->
     <div class="ModalOverlay" id="ServerSettingsModal">
-        <div class="SettingsModal" style="max-width: 900px; height: 600px; display:flex;">
-            <div class="SettingsSidebar">
-                <h3 style="margin-left:10px; margin-bottom: 20px;">Ajustes de Servidor</h3>
-                <div class="SettingsNav active" data-tab="srv-general" onclick="switchSettingsTab('srv-general')">Visión General</div>
-                <div class="SettingsNav" data-tab="srv-roles" onclick="switchSettingsTab('srv-roles')">Roles</div>
-                <div class="SettingsNav" data-tab="srv-security" onclick="switchSettingsTab('srv-security')">Seguridad</div>
-                <div class="SettingsNav" data-tab="srv-channels" onclick="switchSettingsTab('srv-channels')">Canales</div>
-                <div class="SettingsNav" data-tab="srv-members" onclick="switchSettingsTab('srv-members')">Miembros</div>
-                <div class="SettingsNav" data-tab="srv-logs" onclick="switchSettingsTab('srv-logs')">Registro (Logs)</div>
-                <button onclick="closeSettings()" style="margin-top: auto; width: 100%; border:none; background: rgba(255,255,255,0.05); padding:10px; border-radius:10px; cursor:pointer;">Cerrar</button>
-            </div>
-            <div class="SettingsContent" id="SettingsContent" style="padding: 2rem; overflow-y: auto; flex: 1;">
-                <!-- Dinámico -->
-            </div>
+      <div
+        class="SettingsModal"
+        style="max-width: 900px; height: 600px; display: flex"
+      >
+        <div class="SettingsSidebar">
+          <h3 style="margin-left: 10px; margin-bottom: 20px">
+            Ajustes de Servidor
+          </h3>
+          <div
+            class="SettingsNav active"
+            data-tab="srv-general"
+            onclick="switchSettingsTab('srv-general')"
+          >
+            Visión General
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="srv-roles"
+            onclick="switchSettingsTab('srv-roles')"
+          >
+            Roles
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="srv-security"
+            onclick="switchSettingsTab('srv-security')"
+          >
+            Seguridad
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="srv-channels"
+            onclick="switchSettingsTab('srv-channels')"
+          >
+            Canales
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="srv-members"
+            onclick="switchSettingsTab('srv-members')"
+          >
+            Miembros
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="srv-logs"
+            onclick="switchSettingsTab('srv-logs')"
+          >
+            Registro (Logs)
+          </div>
+          <button
+            onclick="closeSettings()"
+            style="
+              margin-top: auto;
+              width: 100%;
+              border: none;
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-radius: 10px;
+              cursor: pointer;
+            "
+          >
+            Cerrar
+          </button>
         </div>
+        <div
+          class="SettingsContent"
+          id="SettingsContent"
+          style="padding: 2rem; overflow-y: auto; flex: 1"
+        >
+          <!-- Dinámico -->
+        </div>
+      </div>
     </div>
 
     <!-- MODAL DE PERFIL DE USUARIO -->
     <div class="ModalOverlay" id="ProfileModal">
-        <div class="ProfileCard">
-            <div class="ProfileBanner"></div>
-            <div class="ProfileMain">
-                <div class="ProfileAvatarLarge"></div>
-                <h2 id="ProfileDisplayName">Nombre</h2>
-                <div id="ProfileUsername" style="color: var(--text-muted); font-size: 0.9rem;">@usuario</div>
-                <div class="ProfileBio" id="ProfileBio">Biografía corta del usuario...</div>
-                
-                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                    <button id="ProfileEditBtn" style="display:none; width: 100%; border:none; background: var(--primary); color:#000; padding:10px; border-radius:10px;" onclick="openEditProfile()">Editar Perfil</button>
-                    <button style="width: 100%; border:none; background: rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-top:10px;" onclick="closeProfile()">Cerrar</button>
-                </div>
-            </div>
+      <div class="ProfileCard">
+        <div class="ProfileBanner"></div>
+        <div class="ProfileMain">
+          <div class="ProfileAvatarLarge"></div>
+          <h2 id="ProfileDisplayName">Nombre</h2>
+          <div
+            id="ProfileUsername"
+            style="color: var(--text-muted); font-size: 0.9rem"
+          >
+            @usuario
+          </div>
+          <div class="ProfileBio" id="ProfileBio">
+            Biografía corta del usuario...
+          </div>
+
+          <div
+            style="
+              margin-top: 20px;
+              border-top: 1px solid rgba(255, 255, 255, 0.05);
+              padding-top: 15px;
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+            "
+          >
+            <button
+              id="ProfileEditBtn"
+              style="
+                display: none;
+                width: 100%;
+                border: none;
+                background: var(--primary);
+                color: #000;
+                padding: 10px;
+                border-radius: 10px;
+              "
+              onclick="openEditProfile()"
+            >
+              Editar Perfil
+            </button>
+            <button
+              id="ProfileCallBtn"
+              style="
+                display: none;
+                width: 100%;
+                border: none;
+                background: #10b981;
+                color: #fff;
+                padding: 10px;
+                border-radius: 10px;
+              "
+              onclick="
+                initCall(
+                  document
+                    .getElementById('ProfileUsername')
+                    .innerText.replace('@', ''),
+                )
+              "
+            >
+              Llamar
+            </button>
+            <button
+              style="
+                width: 100%;
+                border: none;
+                background: rgba(255, 255, 255, 0.05);
+                padding: 10px;
+                border-radius: 10px;
+              "
+              onclick="closeProfile()"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- MODAL DE EDICIÓN DE PERFIL (V4.0) -->
     <div class="ModalOverlay" id="EditProfileModal">
-        <div class="SettingsModal" style="max-width: 800px; height: 500px; display:flex;">
-            <div class="SettingsSidebar">
-                <h3 style="margin-left:10px; margin-bottom: 20px;">Mi Cuenta</h3>
-                <div class="SettingsNav active" data-tab="profile-basic" onclick="switchEditTab('profile-basic')">Perfil</div>
-                <div class="SettingsNav" data-tab="profile-privacy" onclick="switchEditTab('profile-privacy')">Privacidad</div>
-                <div class="SettingsNav" data-tab="profile-security" onclick="switchEditTab('profile-security')">Seguridad</div>
-                <div class="SettingsNav" data-tab="profile-appearance" onclick="switchEditTab('profile-appearance')">Apariencia</div>
-                <button onclick="closeEditProfile()" style="margin-top: auto; width: 100%; border:none; background: rgba(255,255,255,0.05); padding:10px; border-radius:10px; cursor:pointer;">Cerrar</button>
-            </div>
-            <div class="SettingsContent" id="EditProfileContent" style="padding: 2rem; overflow-y: auto; flex: 1;">
-                <!-- Dinámico -->
-            </div>
+      <div
+        class="SettingsModal"
+        style="max-width: 800px; height: 500px; display: flex"
+      >
+        <div class="SettingsSidebar">
+          <h3 style="margin-left: 10px; margin-bottom: 20px">Mi Cuenta</h3>
+          <div
+            class="SettingsNav active"
+            data-tab="profile-basic"
+            onclick="switchEditTab('profile-basic')"
+          >
+            Perfil
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="profile-privacy"
+            onclick="switchEditTab('profile-privacy')"
+          >
+            Privacidad
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="profile-security"
+            onclick="switchEditTab('profile-security')"
+          >
+            Seguridad
+          </div>
+          <div
+            class="SettingsNav"
+            data-tab="profile-appearance"
+            onclick="switchEditTab('profile-appearance')"
+          >
+            Apariencia
+          </div>
+          <button
+            onclick="closeEditProfile()"
+            style="
+              margin-top: auto;
+              width: 100%;
+              border: none;
+              background: rgba(255, 255, 255, 0.05);
+              padding: 10px;
+              border-radius: 10px;
+              cursor: pointer;
+            "
+          >
+            Cerrar
+          </button>
         </div>
+        <div
+          class="SettingsContent"
+          id="EditProfileContent"
+          style="padding: 2rem; overflow-y: auto; flex: 1"
+        >
+          <!-- Dinámico -->
+        </div>
+      </div>
     </div>
 
     <!-- MODAL DE ACCIÓN PROFESIONAL (V7.0) -->
     <div class="ModalOverlay" id="ActionModal">
-        <div class="ActionCard" style="max-width: 450px; width: 90%; background: #2b2d31; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.5); padding: 24px;">
-            <div id="ActionModalHeader" style="margin-bottom: 16px;">
-                <h2 id="ActionTitle" style="color:#fff; font-size: 1.25rem; margin-bottom: 8px;">Título</h2>
-                <p id="ActionDesc" style="color:#b5bac1; font-size: 0.9rem;">Descripción de la acción.</p>
-            </div>
-            <div id="ActionInputArea" style="margin-bottom: 24px; display:none;">
-                <label id="ActionInputLabel" style="display:block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #b5bac1; margin-bottom: 8px;">INPUT LABEL</label>
-                <input type="text" id="ActionInput" style="width: 100%; background: #1e1f22; border: none; padding: 10px; border-radius: 4px; color: #dbdee1; outline: none; border: 1px solid rgba(255,255,255,0.05);">
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                <button id="ActionCancelBtn" onclick="closeActionModal()" style="background:none; border:none; color:#fff; cursor:pointer; font-size: 0.9rem; font-weight: 500; padding: 10px 16px;">Cancelar</button>
-                <button id="ActionConfirmBtn" style="background:var(--primary); color:#000; border:none; padding: 10px 24px; border-radius: 4px; font-weight: 600; cursor:pointer; transition: opacity 0.2s;">Confirmar</button>
-            </div>
+      <div
+        class="ActionCard"
+        style="
+          max-width: 450px;
+          width: 90%;
+          background: #2b2d31;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+          padding: 24px;
+        "
+      >
+        <div id="ActionModalHeader" style="margin-bottom: 16px">
+          <h2
+            id="ActionTitle"
+            style="color: #fff; font-size: 1.25rem; margin-bottom: 8px"
+          >
+            Título
+          </h2>
+          <p id="ActionDesc" style="color: #b5bac1; font-size: 0.9rem">
+            Descripción de la acción.
+          </p>
         </div>
+        <div id="ActionInputArea" style="margin-bottom: 24px; display: none">
+          <label
+            id="ActionInputLabel"
+            style="
+              display: block;
+              font-size: 0.75rem;
+              font-weight: 800;
+              text-transform: uppercase;
+              color: #b5bac1;
+              margin-bottom: 8px;
+            "
+            >INPUT LABEL</label
+          >
+          <input
+            type="text"
+            id="ActionInput"
+            style="
+              width: 100%;
+              background: #1e1f22;
+              border: none;
+              padding: 10px;
+              border-radius: 4px;
+              color: #dbdee1;
+              outline: none;
+              border: 1px solid rgba(255, 255, 255, 0.05);
+            "
+          />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px">
+          <button
+            id="ActionCancelBtn"
+            onclick="closeActionModal()"
+            style="
+              background: none;
+              border: none;
+              color: #fff;
+              cursor: pointer;
+              font-size: 0.9rem;
+              font-weight: 500;
+              padding: 10px 16px;
+            "
+          >
+            Cancelar
+          </button>
+          <button
+            id="ActionConfirmBtn"
+            style="
+              background: var(--primary);
+              color: #000;
+              border: none;
+              padding: 10px 24px;
+              border-radius: 4px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: opacity 0.2s;
+            "
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
     </div>
 
     <script src="./script/dashboard.js"></script>
-</body>
+  </body>
 </html>

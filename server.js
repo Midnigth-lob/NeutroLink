@@ -128,6 +128,9 @@ const Message = mongoose.model("Message", MessageSchema);
 const Friend = mongoose.model("Friend", FriendSchema);
 const Log = mongoose.model("Log", LogSchema);
 
+// In-memory signaling for calls (Production should use WebSockets/Redis)
+const callSignals = new Map();
+
 // --- Helpers ---
 async function logEvent(type, details) {
     try {
@@ -478,6 +481,15 @@ app.post("/api/servers", verifyToken, async (req, res) => {
     if (!name) return res.status(400).json({ error: "El nombre es obligatorio" });
 
     try {
+        // Verificar límites por tier
+        const user = await User.findOne({ username: req.user.username });
+        const serverCount = await Server.countDocuments({ owner: req.user.username });
+        
+        const tier = user?.metadata?.tier || "BASIC";
+        if (tier === "BASIC" && serverCount >= 5) {
+            return res.status(403).json({ error: "Límite de servidores alcanzado para el plan Basic (Máx 5). Sube a Platinum para servidores ilimitados." });
+        }
+
         const ownerRoleId = "role-owner-" + Date.now();
         const memberRoleId = "role-member-" + Date.now();
 
@@ -498,10 +510,11 @@ app.post("/api/servers", verifyToken, async (req, res) => {
         });
 
         await newServer.save();
+        await logEvent("SERVER_CREATED", { serverId: newServer.id, serverName: name, creator: req.user.username });
         res.json(newServer);
     } catch (err) {
-        console.error("Error al crear servidor:", err);
-        res.status(500).json({ error: "Error al crear el servidor" });
+        console.error("CRITICAL: Error al crear servidor:", err);
+        res.status(500).json({ error: "Error interno al crear el servidor: " + err.message });
     }
 });
 
@@ -955,31 +968,57 @@ app.get("/api/servers/:serverId/members", verifyToken, async (req, res) => {
     }
 });
 
-// Logs
-app.get("/api/servers/:serverId/logs", verifyToken, checkPerm(PERMS.VIEW_LOGS), async (req, res) => {
+// --- SISTEMA DE SEÑALIZACIÓN PARA LLAMADAS (WebRTC) ---
+app.post("/api/calls/signal", verifyToken, async (req, res) => {
     try {
-        const logs = await Log.find({
-            $or: [
-                { serverId: req.params.serverId },
-                { "details.serverId": req.params.serverId }
-            ]
-        }).sort({ timestamp: -1 }).lean();
-        res.json(logs);
+        const { target, signal } = req.body; // target: username del destinatario
+        if (!target || !signal) return res.status(400).json({ error: "Datos incompletos" });
+
+        if (!callSignals.has(target)) callSignals.set(target, []);
+        callSignals.get(target).push({ from: req.user.username, signal, type: signal.type, timestamp: Date.now() });
+        
+        // Limpiar señales antiguas
+        if (callSignals.get(target).length > 20) callSignals.get(target).shift();
+        
+        res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: "Error" });
+        res.status(500).json({ error: "Error de señalización" });
     }
 });
 
-// Pagos
+app.get("/api/calls/signal", verifyToken, async (req, res) => {
+    try {
+        const mySignals = callSignals.get(req.user.username) || [];
+        callSignals.set(req.user.username, []); // Consumir señales
+        res.json(mySignals);
+    } catch (err) {
+        res.status(500).json({ error: "Error obteniendo señales" });
+    }
+});
+
+// Pagos y Membresías Mejorado
 app.post("/api/pay", verifyToken, async (req, res) => {
     try {
-        const { tier, cardName } = req.body;
+        const { tier, cardName } = req.body; // tier: 'PREMIUM' (Basic) o 'PLATINUM'
+        
+        const tierData = {
+            'PREMIUM': { name: 'Premium (Basic)', uploadLimit: '100MB', price: 5 },
+            'PLATINUM': { name: 'Platinum', uploadLimit: '500MB', price: 15 }
+        };
+
+        if (!tierData[tier]) return res.status(400).json({ error: "Paquete no válido" });
+
         const user = await User.findOneAndUpdate(
             { username: req.user.username },
             { 
                 $set: { 
                     "metadata.tier": tier,
-                    "metadata.lastPurchase": { date: new Date().toISOString(), cardHolder: cardName }
+                    "metadata.lastPurchase": { 
+                        date: new Date().toISOString(), 
+                        cardHolder: cardName,
+                        amount: tierData[tier].price,
+                        package: tierData[tier].name
+                    }
                 } 
             },
             { new: true }
@@ -987,10 +1026,17 @@ app.post("/api/pay", verifyToken, async (req, res) => {
 
         if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
-        await logEvent("PAYMENT_SUCCESS", { username: req.user.username, tier, cardHolder: cardName });
-        res.json({ message: "Suscripción actualizada" });
+        await logEvent("PAYMENT_SUCCESS", { 
+            username: req.user.username, 
+            tier, 
+            amount: tierData[tier].price,
+            cardHolder: cardName 
+        });
+        
+        res.json({ message: `¡Gracias! Ahora eres ${tierData[tier].name}`, tier: tier });
     } catch (err) {
-        res.status(500).json({ error: "Error" });
+        console.error("Error en pago:", err);
+        res.status(500).json({ error: "Error procesando el pago" });
     }
 });
 

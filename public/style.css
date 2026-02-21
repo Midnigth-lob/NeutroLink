@@ -996,3 +996,50 @@ video {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Animated Badge for Platinum Users */
+.animated-badge {
+    animation: badge-glow 2s infinite alternate;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes badge-glow {
+    0% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.4); filter: brightness(1); }
+    100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.8), 0 0 20px rgba(99, 102, 241, 0.6); filter: brightness(1.2); }
+}
+
+.animated-badge::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 45%,
+        rgba(255, 255, 255, 0.5) 50%,
+        rgba(255, 255, 255, 0.1) 55%,
+        transparent 100%
+    );
+    transform: rotate(45deg);
+    animation: badge-shimmer 3s infinite;
+}
+
+@keyframes badge-shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Modal and Call Polish */
+#CallOverlay {
+    box-shadow: 0 0 100px rgba(16, 185, 129, 0.2);
+}
+
+#ProfileCallBtn:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
