@@ -34,6 +34,14 @@ const UserSchema = new mongoose.Schema({
         lastLogin: { type: String },
         lastIp: { type: String }
     },
+    warnings: [{
+        reason: String,
+        date: String,
+        givenBy: String,
+        severity: { type: String, default: 'low' }
+    }],
+    isBanned: { type: Boolean, default: false },
+    banReason: String,
     privacy: {
         see_profile: { type: String, default: "all" },
         send_dm: { type: String, default: "all" },
@@ -84,7 +92,13 @@ const ServerSchema = new mongoose.Schema({
         uses: Number,
         expires: String
     }],
-    bans: [String]
+    bans: [{
+        username: String,
+        reason: String,
+        expires: String,
+        bannedBy: String,
+        date: String
+    }]
 });
 
 const MessageSchema = new mongoose.Schema({
@@ -519,7 +533,7 @@ app.post("/api/servers", verifyToken, async (req, res) => {
 });
 
 // Actualizar Ajustes del Servidor
-app.put("/api/servers/:serverId", verifyToken, async (req, res) => {
+app.put("/api/servers/:serverId", verifyToken, checkPerm(PERMS.MANAGE_SERVER), async (req, res) => {
     try {
         const { serverId } = req.params;
         const { name, description } = req.body;
@@ -708,9 +722,38 @@ app.put("/api/messages/:msgId", verifyToken, async (req, res) => {
 app.delete("/api/messages/:msgId", verifyToken, async (req, res) => {
     try {
         const { msgId } = req.params;
-        const msg = await Message.findOneAndDelete({ id: msgId, sender: req.user.username });
-        if (!msg) return res.status(403).json({ error: "No permitido" });
-        res.json({ message: "Mensaje eliminado" });
+        const msg = await Message.findOne({ id: msgId });
+        if (!msg) return res.status(404).json({ error: "Mensaje no encontrado" });
+
+        // Si es el autor, puede borrarlo
+        // Si no, necesitamos verificar si tiene permiso de moderador en el servidor donde está el mensaje
+        if (msg.sender === req.user.username) {
+            await Message.deleteOne({ id: msgId });
+            return res.json({ message: "Mensaje eliminado por el autor" });
+        }
+
+        if (msg.targetType === 'server' || msg.targetType === 'channel') {
+            const serverId = msg.targetId;
+            const server = await Server.findOne({ id: serverId });
+            if (server) {
+                const member = server.members.find(m => m.username === req.user.username);
+                const isOwner = server.owner === req.user.username;
+                
+                // Verificar roles para DELETE_MESSAGES
+                const hasModPerm = isOwner || (member && member.roles.some(roleId => {
+                    const role = server.roles.find(r => r.id === roleId);
+                    return role && (role.permissions.includes(PERMS.ADMINISTRATOR) || role.permissions.includes(PERMS.DELETE_MESSAGES));
+                }));
+
+                if (hasModPerm) {
+                    await Message.deleteOne({ id: msgId });
+                    await logEvent("MESSAGE_DELETED_BY_MOD", { serverId, msgId, moderator: req.user.username, sender: msg.sender });
+                    return res.json({ message: "Mensaje eliminado por moderación" });
+                }
+            }
+        }
+
+        res.status(403).json({ error: "No tienes permiso para eliminar este mensaje" });
     } catch (err) {
         res.status(500).json({ error: "Error al eliminar mensaje" });
     }
@@ -897,27 +940,117 @@ app.post("/api/servers/:serverId/members/:username/kick", verifyToken, checkPerm
     }
 });
 
-// MODERACIÓN: Ban
+// MODERACIÓN: Ban Avanzado
 app.post("/api/servers/:serverId/members/:username/ban", verifyToken, checkPerm(PERMS.BAN_MEMBERS), async (req, res) => {
     try {
         const { serverId, username } = req.params;
+        const { reason, days } = req.body;
         const server = await Server.findOne({ id: serverId });
         if (!server) return res.status(404).json({ error: "No encontrado" });
-        if (username === server.owner) return res.status(403).json({ error: "No permitido" });
+        if (username === server.owner) return res.status(403).json({ error: "No permitido banear al dueño" });
         
+        const expires = days ? new Date(Date.now() + days * 86400000).toISOString() : null;
+
         await Server.findOneAndUpdate(
             { id: serverId },
             { 
                 $pull: { members: { username } },
-                $addToSet: { bans: username }
+                $addToSet: { 
+                    bans: { 
+                        username, 
+                        reason: reason || "Sin motivo especificado", 
+                        expires, 
+                        bannedBy: req.user.username,
+                        date: new Date().toISOString()
+                    } 
+                }
             }
         );
         
-        await logEvent("MEMBER_BANNED", { serverId, targetUser: username, moderator: req.user.username });
-        res.json({ message: "Baneado" });
+        await logEvent("MEMBER_BANNED", { serverId, targetUser: username, moderator: req.user.username, reason, expires });
+        res.json({ message: "Usuario baneado correctamente", expires });
     } catch (err) {
-        res.status(500).json({ error: "Error en ban" });
+        res.status(500).json({ error: "Error en ban avanzado" });
     }
+});
+
+// Ver lista de baneados
+app.get("/api/servers/:serverId/bans", verifyToken, checkPerm(PERMS.BAN_MEMBERS), async (req, res) => {
+    try {
+        const server = await Server.findOne({ id: req.params.serverId });
+        res.json(server.bans || []);
+    } catch (err) {
+        res.status(500).json({ error: "Error al obtener baneos" });
+    }
+});
+
+// Quitar baneo
+app.delete("/api/servers/:serverId/bans/:username", verifyToken, checkPerm(PERMS.BAN_MEMBERS), async (req, res) => {
+    try {
+        await Server.findOneAndUpdate(
+            { id: req.params.serverId },
+            { $pull: { bans: { username: req.params.username } } }
+        );
+        res.json({ message: "Baneo levantado" });
+    } catch (err) {
+        res.status(500).json({ error: "Error al quitar baneo" });
+    }
+});
+
+// Advertencias (Warnings)
+app.post("/api/servers/:serverId/members/:username/warn", verifyToken, checkPerm(PERMS.KICK_MEMBERS), async (req, res) => {
+    try {
+        const { username } = req.params;
+        const { reason } = req.body;
+        
+        const user = await User.findOneAndUpdate(
+            { username },
+            { 
+                $push: { 
+                    warnings: { 
+                        reason, 
+                        date: new Date().toISOString(), 
+                        givenBy: req.user.username 
+                    } 
+                } 
+            },
+            { new: true }
+        );
+        
+        if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
+        
+        await logEvent("MEMBER_WARNED", { serverId: req.params.serverId, targetUser: username, moderator: req.user.username, reason });
+        res.json({ message: "Advertencia enviada", totalWarnings: user.warnings.length });
+    } catch (err) {
+        res.status(500).json({ error: "Error al dar advertencia" });
+    }
+});
+
+// Endpoints de LOGS del servidor
+app.get("/api/servers/:serverId/logs", verifyToken, checkPerm(PERMS.ADMINISTRATOR), async (req, res) => {
+    try {
+        const logs = await Log.find({ serverId: req.params.serverId }).sort({ timestamp: -1 }).limit(100);
+        res.json(logs);
+    } catch (err) {
+        res.status(500).json({ error: "Error al cargar logs" });
+    }
+});
+
+// --- ADMIN GLOBAL (PLATFORM CONTROL) ---
+// Solo el creador original o admin puede usar esto
+const IS_GLOBAL_ADMIN = async (req, res, next) => {
+    const user = await User.findOne({ username: req.user.username });
+    // Por ahora, el primer usuario o alguien con tier PLATINUM y flag especial
+    if (user && (user.username === 'User' || user.metadata?.tier === 'PLATINUM')) { // Ajustar según conveniencia
+        return next();
+    }
+    res.status(403).json({ error: "Acceso denegado: Solo para Administración Global" });
+};
+
+app.post("/api/admin/global-ban", verifyToken, IS_GLOBAL_ADMIN, async (req, res) => {
+    const { username, reason } = req.body;
+    await User.findOneAndUpdate({ username }, { $set: { isBanned: true, banReason: reason } });
+    res.json({ message: `Usuario @${username} baneado de la plataforma.` });
 });
 
 // MODERACIÓN: Mute

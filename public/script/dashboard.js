@@ -102,6 +102,12 @@ async function fetchProfile() {
                 badge.style.display = "none";
             }
         }
+
+        // Mostrar Botón de Admin Global si es el usuario dueño
+        if (currentUser.username === 'User') { // TODO: Cambiar por el username real del dueño
+            const adminBtn = document.getElementById("GlobalAdminNavBtn");
+            if (adminBtn) adminBtn.style.display = "flex";
+        }
     } catch (e) { console.error("Profile fetch failed", e); }
 }
 
@@ -481,6 +487,13 @@ async function viewUserProfile(username) {
         document.getElementById("ProfileEditBtn").style.display = (username === currentUser.username) ? "block" : "none";
         document.getElementById("ProfileCallBtn").style.display = (username !== currentUser.username) ? "block" : "none";
         
+        // Mostrar controles de moderación si somos dueños o tenemos permisos y NO es nuestro perfil
+        const isOwner = currentServer && currentServer.owner === currentUser.username;
+        const modGroup = document.getElementById("ProfileModGroup");
+        if (modGroup) {
+            modGroup.style.display = (username !== currentUser.username && isOwner) ? "flex" : "none";
+        }
+        
         // Status Dot in Modal
         const statusColors = { online: "#10b981", idle: "#f59e0b", dnd: "#ef4444", invisible: "#94a3b8", offline: "#4b5563" };
         avatar.innerHTML = `<div style="position:absolute; bottom:5px; right:5px; width:20px; height:20px; border-radius:50%; background:${statusColors[user.metadata?.status || 'offline']}; border:4px solid #1e1f22;"></div>`;
@@ -583,6 +596,8 @@ function switchSettingsTab(tab) {
         `;
     } else if (tab === 'srv-members') {
         renderMembersTab();
+    } else if (tab === 'srv-bans') {
+        renderBansTab();
     } else if (tab === 'srv-logs') {
         renderServerLogs();
     }
@@ -727,25 +742,86 @@ async function deleteRole(roleId, name) {
     );
 }
 
-async function renderServerLogs() {
-    const res = await fetch(`/api/servers/${currentServer.id}/logs`, { headers: { "Authorization": `Bearer ${token}` } });
-    const logs = await res.json();
+function formatLogDetails(l) {
+    if (l.type === 'MEMBER_BANNED') return `@${l.targetUser} fue baneado por ${l.moderator}. Motivo: ${l.reason || 'Ninguno'}`;
+    if (l.type === 'MEMBER_WARNED') return `@${l.targetUser} recibió una advertencia. Motivo: ${l.reason || 'Ninguno'}`;
+    if (l.type === 'ROLE_CREATED') return `Rol '${l.roleName}' creado por ${l.creator}`;
+    if (l.type === 'MEMBER_JOINED') return `@${l.username} se unió al servidor.`;
+    return `Acción realizada por ${l.moderator || l.creator || l.username || 'System'}`;
+}
+
+async function renderBansTab() {
+    const res = await fetch(`/api/servers/${currentServer.id}/bans`, { headers: { "Authorization": `Bearer ${token}` } });
+    const bans = await res.json();
     document.getElementById("SettingsContent").innerHTML = `
-        <h2 style="margin-bottom:20px;">Registros de Auditoría</h2>
-        <div style="background:#1e1f22; border-radius:8px; border:1px solid rgba(255,255,255,0.05); overflow:hidden;">
-            ${logs.map(l => `
-                <div class="LogItem" style="margin-bottom:0; border-radius:0; border:none; border-bottom:1px solid rgba(255,255,255,0.03);">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="color:var(--primary); font-size:0.7rem;">[${new Date(l.timestamp).toLocaleString()}]</span>
-                        <span style="font-weight:600; font-size:0.75rem; color:#fff;">${l.type}</span>
+        <h2 style="margin-bottom:20px;">Lista de Baneados</h2>
+        <div style="display:grid; gap:10px;">
+            ${bans.map(b => `
+                <div class="LogItem" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <div style="font-weight:800; color:#ef4444;">@${b.username}</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted);">Motivo: ${b.reason}</div>
+                        <div style="font-size:0.6rem; color:var(--text-muted);">Por ${b.bannedBy} • Expira: ${b.expires ? new Date(b.expires).toLocaleDateString() : 'Nunca'}</div>
                     </div>
-                    <div style="color:var(--text-muted); font-size:0.75rem; margin-top:4px;">
-                        ${formatLogDetails(l)}
-                    </div>
+                    <button onclick="unbanUser('${b.username}')" style="background:var(--primary); color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; font-weight:700;">Levantar</button>
                 </div>
-            `).join("") || "<div style='padding:20px; color:var(--text-muted);'>Sin registros aún.</div>"}
+            `).join("") || "<div style='color:var(--text-muted);'>No hay baneados.</div>"}
         </div>
     `;
+}
+
+async function unbanUser(username) {
+    const res = await fetch(`/api/servers/${currentServer.id}/bans/${username}`, { 
+        method: "DELETE", 
+        headers: { "Authorization": `Bearer ${token}` } 
+    });
+    if (res.ok) {
+        showToast(`Baneo quitado a @${username}`, "success");
+        renderBansTab();
+    }
+}
+
+async function banMember(username) {
+    openActionModal(
+        `Banear a @${username}`,
+        "Indica el motivo y duración (en días, 0 para permanente).",
+        "Aplicar BAN",
+        async (input) => {
+            const [reason, days] = input.split(",").map(s => s.trim());
+            const res = await fetch(`/api/servers/${currentServer.id}/members/${username}/ban`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ reason: reason || "Sin motivo", days: parseInt(days) || 0 })
+            });
+            if (res.ok) {
+                showToast(`@${username} ha sido baneado`, "error");
+                closeProfile();
+                await selectServer(currentServer.id);
+            }
+        },
+        true,
+        "Ej: Spam, 7"
+    );
+}
+
+async function warnMember(username) {
+    openActionModal(
+        `Advertir a @${username}`,
+        "Indica el motivo de la advertencia.",
+        "Enviar Aviso",
+        async (reason) => {
+            const res = await fetch(`/api/servers/${currentServer.id}/members/${username}/warn`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ reason })
+            });
+            if (res.ok) {
+                showToast(`Advertencia enviada a @${username}`, "warning");
+            }
+        },
+        true,
+        "Motivo"
+    );
 }
 
 function formatLogDetails(log) {
@@ -1327,6 +1403,50 @@ function closeCall() {
     if (localStream) localStream.getTracks().forEach(t => t.stop());
     if (peerConnection) peerConnection.close();
     document.getElementById("CallOverlay").style.display = "none";
+}
+
+async function globalBanUser(username) {
+    openActionModal(
+        `Banear Global: @${username}`,
+        "El usuario no podrá entrar a ninguna parte de la plataforma.",
+        "Banear de NeutroLink",
+        async (reason) => {
+            const res = await fetch("/api/admin/global-ban", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ username, reason })
+            });
+            if (res.ok) showToast(`Usuario @${username} baneado globalmente`, "error");
+        },
+        true,
+        "Motivo"
+    );
+}
+
+function showAdminPanel() {
+    currentServer = null; 
+    currentTarget = null;
+    elements.chatHeader.innerText = "Panel de Administración Global";
+    elements.messageList.innerHTML = `
+        <div style="padding: 20px;">
+            <h2 style="color:var(--primary); text-shadow: 0 0 10px var(--primary);">Panel de Control Maestro</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Desde aquí puedes controlar toda la plataforma NeutroLink.</p>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                <div class="LogItem" style="background:rgba(239, 68, 68, 0.05); border: 2px solid #ef4444; border-radius: 12px; padding: 20px;">
+                    <h3 style="color:#ef4444;">Baneo Global</h3>
+                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Prohibe el acceso total a un usuario por su nombre de forma inmediata.</p>
+                    <button class="PrimaryBtn" style="background:#ef4444; color:#fff; width:100%;" onclick="openActionModal('Baneo Global', 'Introduce el username exacto', 'Banear', (u) => globalBanUser(u), true, 'Username')">Banear Usuario</button>
+                </div>
+                
+                <div class="LogItem" style="background:rgba(16, 185, 129, 0.05); border: 2px solid #10b981; border-radius: 12px; padding: 20px;">
+                    <h3 style="color:#10b981;">Anuncio Global</h3>
+                    <p style="font-size:0.85rem; margin:10px 0; color:var(--text-muted);">Envía un mensaje a todos los sistemas o logs para avisos importantes.</p>
+                    <button class="PrimaryBtn" style="background:#10b981; color:#fff; width:100%; transition: scale 0.2s;" onclick="showToast('Sistema de anuncios en fase final', 'info')">Notificar a todos</button>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 document.getElementById("HangupBtn").onclick = closeCall;

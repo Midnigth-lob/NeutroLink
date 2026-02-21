@@ -925,9 +925,10 @@ video {
 }
 
 .ProfileBanner {
-    height: 100px;
-    background: var(--primary);
-    opacity: 0.2;
+    height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--glass-border);
+    opacity: 1;
 }
 
 .ProfileMain {
