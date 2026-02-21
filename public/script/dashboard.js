@@ -104,15 +104,30 @@ async function fetchProfile() {
             }
         }
 
+        // Renderizar Avatar Propio (Pie de página)
+        const selfAvatar = document.getElementById("userAvatarSelf");
+        if (selfAvatar) {
+            const avatarUrl = currentUser.personalization?.avatar;
+            if (avatarUrl) {
+                selfAvatar.style.backgroundImage = `url('${avatarUrl}')`;
+                selfAvatar.style.backgroundSize = "cover";
+                selfAvatar.style.backgroundPosition = "center";
+                selfAvatar.innerText = "";
+            } else {
+                selfAvatar.style.backgroundImage = "none";
+                selfAvatar.innerText = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+
         // Mostrar Botón de Admin Global si es el usuario dueño o staff
         try {
             const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
             if (adminCheck.ok) {
                 const data = await adminCheck.json();
                 isGlobalAdminUser = data.isGlobalAdmin;
-                if (isGlobalAdminUser) {
-                    const adminBtn = document.getElementById("GlobalAdminNavBtn");
-                    if (adminBtn) adminBtn.style.display = "flex";
+                const adminBtn = document.getElementById("GlobalAdminNavBtn");
+                if (adminBtn) {
+                    adminBtn.style.display = isGlobalAdminUser ? "flex" : "none";
                 }
             }
         } catch (adminErr) {
@@ -947,9 +962,20 @@ async function renderServerMembers() {
                 group.members.forEach(m => {
                     const status = m.status || 'offline';
                     const displayName = m.nickname || m.username;
+                    const avatarUrl = m.avatar || "";
+                    
+                    let avatarStyle = `background: linear-gradient(135deg, #2b2d31, #1e1f22);`;
+                    let avatarContent = displayName.charAt(0).toUpperCase();
+                    
+                    if (avatarUrl) {
+                        avatarStyle = `background-image: url('${avatarUrl}'); background-size: cover; background-position: center;`;
+                        avatarContent = "";
+                    }
+
                     html += `
                         <div class="MemberListItem" onclick="viewUserProfile('${m.username}')">
-                            <div class="MemberAvatarSmall" style="background: linear-gradient(135deg, #2b2d31, #1e1f22); position:relative;">
+                            <div class="MemberAvatarSmall" style="${avatarStyle} position:relative;">
+                                ${avatarContent}
                                 <div style="position:absolute; bottom:-1px; right:-1px; width:10px; height:10px; border-radius:50%; background:${statusColors[status]}; border:2px solid #1e1f22;"></div>
                             </div>
                             <div class="MemberName" style="color: ${role.color}">${displayName}</div>

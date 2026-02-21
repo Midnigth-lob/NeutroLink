@@ -1124,14 +1124,28 @@ app.put("/api/servers/:serverId/members/:username/nickname", verifyToken, checkP
     }
 });
 
-// Obtener Miembros
+// Obtener Miembros con Avatares
 app.get("/api/servers/:serverId/members", verifyToken, async (req, res) => {
     try {
         const server = await Server.findOne({ id: req.params.serverId }, { members: 1 }).lean();
         if (!server) return res.status(404).json({ error: "No encontrado" });
-        res.json(server.members || []);
+        
+        const memberUsernames = server.members.map(m => m.username);
+        const usersInfo = await User.find({ username: { $in: memberUsernames } }, { username: 1, "personalization.avatar": 1, "metadata.status": 1 }).lean();
+        
+        const usersMap = {};
+        usersInfo.forEach(u => { usersMap[u.username] = u; });
+
+        const enrichedMembers = server.members.map(m => ({
+            ...m,
+            avatar: usersMap[m.username]?.personalization?.avatar || null,
+            status: usersMap[m.username]?.metadata?.status || 'offline'
+        }));
+
+        res.json(enrichedMembers);
     } catch (err) {
-        res.status(500).json({ error: "Error" });
+        console.error("Error al obtener miembros enriquecidos:", err);
+        res.status(500).json({ error: "Error al cargar miembros" });
     }
 });
 
