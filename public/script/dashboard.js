@@ -4,6 +4,7 @@ let currentUser = null;
 let currentTarget = null;
 let currentServer = null; 
 let actionCallback = null;
+let isGlobalAdminUser = false; // Flag para administración NeutroLink Corp
 
 const PREMIUM_BANNERS = {
     "Cyber Neon": "linear-gradient(135deg, #0f0c29, #302b63, #24243e)",
@@ -104,11 +105,18 @@ async function fetchProfile() {
         }
 
         // Mostrar Botón de Admin Global si es el usuario dueño o staff
-        const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
-        const { isGlobalAdmin } = await adminCheck.json();
-        if (isGlobalAdmin) {
-            const adminBtn = document.getElementById("GlobalAdminNavBtn");
-            if (adminBtn) adminBtn.style.display = "flex";
+        try {
+            const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
+            if (adminCheck.ok) {
+                const data = await adminCheck.json();
+                isGlobalAdminUser = data.isGlobalAdmin;
+                if (isGlobalAdminUser) {
+                    const adminBtn = document.getElementById("GlobalAdminNavBtn");
+                    if (adminBtn) adminBtn.style.display = "flex";
+                }
+            }
+        } catch (adminErr) {
+            console.warn("Global admin check failed, skipping shield icon.", adminErr);
         }
     } catch (e) { console.error("Profile fetch failed", e); }
 }
@@ -494,10 +502,29 @@ async function viewUserProfile(username) {
         document.getElementById("ProfileCallBtn").style.display = (username !== currentUser.username) ? "block" : "none";
         
         // Mostrar controles de moderación si somos dueños o tenemos permisos y NO es nuestro perfil
-        const isOwner = currentServer && currentServer.owner === currentUser.username;
         const modGroup = document.getElementById("ProfileModGroup");
+        const globalModGroup = document.getElementById("ProfileGlobalModGroup");
+
         if (modGroup) {
-            modGroup.style.display = (username !== currentUser.username && isOwner) ? "flex" : "none";
+            let hasServerModPerm = false;
+            if (currentServer && username !== currentUser.username) {
+                const me = currentServer.members?.find(m => m.username === currentUser.username);
+                const isSrvOwner = currentServer.owner === currentUser.username;
+                
+                if (isSrvOwner) {
+                    hasServerModPerm = true;
+                } else if (me && me.roles) {
+                    hasServerModPerm = me.roles.some(roleId => {
+                        const role = currentServer.roles?.find(r => r.id === roleId);
+                        return role && (role.permissions.includes('ADMINISTRATOR') || role.permissions.includes('BAN_MEMBERS') || role.permissions.includes('KICK_MEMBERS'));
+                    });
+                }
+            }
+            modGroup.style.display = hasServerModPerm ? "flex" : "none";
+        }
+
+        if (globalModGroup) {
+            globalModGroup.style.display = (isGlobalAdminUser && username !== currentUser.username) ? "flex" : "none";
         }
         
         // Status Dot in Modal
