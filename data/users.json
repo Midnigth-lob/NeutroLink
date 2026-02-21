@@ -1,0 +1,48 @@
+[
+  {
+    "username": "Dev",
+    "password": "$2b$10$7eJ10KYAFwNnQ3dhVq1RRupUorbp1Sb/bIXUbeXiIFEw157JKzIgC",
+    "metadata": {
+      "registeredAt": "2026-02-21T06:06:14.906Z",
+      "ip": "::1",
+      "lastLogin": "2026-02-21T08:13:12.429Z",
+      "lastIp": "::1",
+      "anonymous_mode": true,
+      "status": "dnd"
+    },
+    "sessions": [
+      {
+        "id": "sess-1771661592429",
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+        "createdAt": "2026-02-21T08:13:12.429Z",
+        "lastActive": "2026-02-21T08:13:12.429Z"
+      },
+      {
+        "id": "sess-1771661185120",
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+        "createdAt": "2026-02-21T08:06:25.120Z",
+        "lastActive": "2026-02-21T08:06:25.121Z"
+      },
+      {
+        "id": "sess-1771661071871",
+        "ip": "::1",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+        "createdAt": "2026-02-21T08:04:31.871Z",
+        "lastActive": "2026-02-21T08:04:31.872Z"
+      }
+    ],
+    "privacy": {
+      "see_profile": "friends",
+      "see_status": "friends"
+    },
+    "personalization": {
+      "theme": "dark",
+      "accent": "#ff9500",
+      "banner": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfLYl1cMQIREZR5UuJhVz8ZdYWyOXQyKsnr0EdUYAEiSlyMwMYMQ0pbjQtFNbVq7TfU2uawxao1DYnbdeEnlFKMPXYcP5d_m8VxNthwG8iWw&s=10"
+    },
+    "display_name": "Dark",
+    "bio": "Security Research\nReverser\nFixer"
+  }
+]

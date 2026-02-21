@@ -1,0 +1,196 @@
+[
+  {
+    "id": 1771651560200,
+    "sender": "bautistajohansson@gmail.com",
+    "targetId": "papa",
+    "targetType": "server",
+    "text": "Hola",
+    "time": "02:26 a. m."
+  },
+  {
+    "id": "msg-1771653486527",
+    "sender": "Dark",
+    "targetId": "srv-1771652711638",
+    "targetType": "server",
+    "channelId": "ch-gen-1771652711638",
+    "text": "Hola",
+    "time": "02:58 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771654521165",
+    "sender": "Dev",
+    "targetId": "srv-1771654489604",
+    "targetType": "server",
+    "text": "Bauty",
+    "time": "03:15 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771654546751",
+    "sender": "Dev",
+    "targetId": "srv-1771654489604",
+    "targetType": "server",
+    "text": "Bauty",
+    "time": "03:15 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771654588970",
+    "sender": "Dev",
+    "targetId": "srv-1771654489604",
+    "targetType": "server",
+    "text": "Bauty",
+    "time": "03:16 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771654616376",
+    "sender": "Dev",
+    "targetId": "srv-1771654489604",
+    "targetType": "server",
+    "text": "aaa",
+    "time": "03:16 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771654975938",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771654966291",
+    "targetType": "server",
+    "channelId": "ch-gen-1771654966291",
+    "text": "Hi",
+    "time": "03:22 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771655060115",
+    "sender": "Dev",
+    "targetId": "ch-1771655056023",
+    "targetType": "server",
+    "channelId": "ch-1771655056023",
+    "text": "Hola",
+    "time": "03:24 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771655499198",
+    "sender": "Dev",
+    "targetId": "ch-1771655413460",
+    "targetType": "server",
+    "channelId": "ch-1771655413460",
+    "text": "Hola",
+    "time": "03:31 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771655869509",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771655864102",
+    "targetType": "server",
+    "channelId": "ch-gen-1771655864102",
+    "text": "Hi",
+    "time": "03:37 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771656192021",
+    "sender": "Dev",
+    "targetId": "ch-1771656187717",
+    "targetType": "server",
+    "channelId": "ch-1771656187717",
+    "text": "Hi",
+    "time": "03:43 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771656474228",
+    "sender": "Dev",
+    "targetId": "ch-1771656468993",
+    "targetType": "server",
+    "channelId": "ch-1771656468993",
+    "text": "Hola",
+    "time": "03:47 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771656546341",
+    "sender": "Dev",
+    "targetId": "ch-1771656531811",
+    "targetType": "server",
+    "channelId": "ch-1771656531811",
+    "text": "Ha",
+    "time": "03:49 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771657032695",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771656462112",
+    "targetType": "server",
+    "channelId": "ch-gen-1771656462112",
+    "text": "Hi",
+    "time": "03:57 a. m.",
+    "edited": false
+  },
+  {
+    "id": "msg-1771658417537",
+    "sender": "Dev",
+    "targetId": "ch-1771658402334",
+    "targetType": "server",
+    "channelId": "ch-1771658402334",
+    "text": "Hola",
+    "timestamp": "2026-02-21T07:20:17.537Z",
+    "edited": false
+  },
+  {
+    "id": "msg-1771660428701",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771660411769",
+    "targetType": "server",
+    "channelId": "ch-gen-1771660411769",
+    "text": "Test",
+    "timestamp": "2026-02-21T07:53:48.701Z",
+    "edited": false
+  },
+  {
+    "id": "msg-1771660480564",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771660411769",
+    "targetType": "server",
+    "channelId": "ch-gen-1771660411769",
+    "text": "test",
+    "timestamp": "2026-02-21T07:54:40.564Z",
+    "edited": false
+  },
+  {
+    "id": "msg-1771660620514",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771660411769",
+    "targetType": "server",
+    "channelId": "ch-gen-1771660411769",
+    "text": "test",
+    "timestamp": "2026-02-21T07:57:00.514Z",
+    "edited": false
+  },
+  {
+    "id": "msg-1771660849413",
+    "sender": "Dev",
+    "targetId": "ch-gen-1771660840256",
+    "targetType": "server",
+    "channelId": "ch-gen-1771660840256",
+    "text": "Hola",
+    "timestamp": "2026-02-21T08:00:49.413Z",
+    "edited": false
+  },
+  {
+    "id": "msg-1771661228121",
+    "sender": "Dev",
+    "targetId": "ch-1771661224388",
+    "targetType": "server",
+    "channelId": "ch-1771661224388",
+    "text": "Hola+",
+    "timestamp": "2026-02-21T08:07:08.121Z",
+    "edited": false
+  }
+]

@@ -1,0 +1,532 @@
+[
+  {
+    "timestamp": "2026-02-21T05:44:28.353Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "bautistajohansson@gmail.com",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T05:50:50.473Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T05:51:18.489Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T05:51:55.400Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T05:57:35.367Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:02:21.544Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:02:22.996Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dark",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:06:21.181Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:14:38.590Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:22:18.557Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:23:59.166Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:29:19.364Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:37:28.108Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:42:37.408Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:47:01.582Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T06:56:59.812Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1"
+  },
+  {
+    "timestamp": "2026-02-21T07:01:52.207Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771657312205"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:03.371Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771657323370"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:13.044Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771656462112",
+    "channelName": "baaa",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:15.237Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771656462112",
+    "channelName": "a",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:19.317Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771656462112",
+    "channelName": "Bau",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:21.567Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771656462112",
+    "channelName": "bau",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:32.815Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771656462112",
+    "roleName": "Hola",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:39.369Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771656462112",
+    "roleName": "Hola",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:02:55.254Z",
+    "type": "SERVER_DELETED",
+    "serverId": "srv-1771656462112",
+    "serverName": "Server1",
+    "owner": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:04:47.929Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771657470595",
+    "roleName": "Miembro",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:12:44.258Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771657964256"
+  },
+  {
+    "timestamp": "2026-02-21T07:13:31.806Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771657470595",
+    "channelName": "aa",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:13:33.894Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771657470595",
+    "channelName": "aa",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:15:30.472Z",
+    "type": "SERVER_DELETED",
+    "serverId": "srv-1771657470595",
+    "serverName": "11",
+    "owner": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:16:09.338Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771658169337"
+  },
+  {
+    "timestamp": "2026-02-21T07:17:24.982Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658179596",
+    "roleName": "Roberto",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:18:04.348Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771658179596",
+    "channelName": "aaa",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:18:09.341Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771658179596",
+    "channelName": "aaa",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:18:22.068Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771658179596",
+    "roleName": "Miembro",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:18:26.955Z",
+    "type": "SERVER_DELETED",
+    "serverId": "srv-1771658179596",
+    "serverName": "Test",
+    "owner": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:19:01.181Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771658341180"
+  },
+  {
+    "timestamp": "2026-02-21T07:19:36.470Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658349043",
+    "roleName": "Paredes",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:19:39.714Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771658349043",
+    "roleName": "Miembro",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:19:51.147Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658349043",
+    "roleName": "Miembro",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:20:02.335Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771658349043",
+    "channelName": "Test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:29:56.985Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771658996984"
+  },
+  {
+    "timestamp": "2026-02-21T07:30:35.640Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771659035639"
+  },
+  {
+    "timestamp": "2026-02-21T07:31:47.140Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658349043",
+    "roleName": "Moderator",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:31:58.766Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771658349043",
+    "channelName": "test",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:32:01.935Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771658349043",
+    "channelName": "test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:48:08.940Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771660088939"
+  },
+  {
+    "timestamp": "2026-02-21T07:48:32.582Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771658349043",
+    "roleName": "Paredes",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:48:37.272Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658349043",
+    "roleName": "test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:48:56.491Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771658349043",
+    "roleName": "color",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:49:05.600Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771658349043",
+    "channelName": "test3",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:49:11.288Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771658349043",
+    "channelName": "test3",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:49:12.326Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771658349043",
+    "channelName": "test",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:50:04.877Z",
+    "type": "SERVER_DELETED",
+    "serverId": "srv-1771658349043",
+    "serverName": "Test2",
+    "owner": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:55:19.769Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771660411769",
+    "roleName": "Test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:55:22.643Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771660411769",
+    "roleName": "Miembro",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:55:32.343Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771660411769",
+    "channelName": "testing",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:55:38.002Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771660411769",
+    "channelName": "testing",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:56:16.692Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771660576692"
+  },
+  {
+    "timestamp": "2026-02-21T07:56:35.664Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771660411769",
+    "roleName": "Test",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:56:43.404Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771660411769",
+    "roleName": "tewst",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:56:49.376Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771660411769",
+    "channelName": "adada",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T07:56:54.037Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771660411769",
+    "channelName": "adada",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:00:18.422Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771660818421"
+  },
+  {
+    "timestamp": "2026-02-21T08:00:34.752Z",
+    "type": "SERVER_DELETED",
+    "serverId": "srv-1771660411769",
+    "serverName": "test",
+    "owner": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:01:44.659Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771660840256",
+    "roleName": "Miembro",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:01:52.131Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771660840256",
+    "roleName": "tewst",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:01:59.077Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771660840256",
+    "roleName": "color",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:02:04.950Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771660840256",
+    "channelName": "aaa",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:02:12.965Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771660840256",
+    "channelName": "aaa",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:04:31.872Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771661071871"
+  },
+  {
+    "timestamp": "2026-02-21T08:06:25.122Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771661185120"
+  },
+  {
+    "timestamp": "2026-02-21T08:06:36.188Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771660840256",
+    "roleName": "tewst",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:06:37.782Z",
+    "type": "ROLE_DELETED",
+    "serverId": "srv-1771660840256",
+    "roleName": "color",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:06:49.638Z",
+    "type": "ROLE_CREATED",
+    "serverId": "srv-1771660840256",
+    "roleName": "test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:07:04.389Z",
+    "type": "CHANNEL_CREATED",
+    "serverId": "srv-1771660840256",
+    "channelName": "test",
+    "creator": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:07:14.039Z",
+    "type": "CHANNEL_DELETED",
+    "serverId": "srv-1771660840256",
+    "channelName": "test",
+    "deletedBy": "Dev"
+  },
+  {
+    "timestamp": "2026-02-21T08:13:12.430Z",
+    "type": "LOGIN_SUCCESS",
+    "username": "Dev",
+    "ip": "::1",
+    "sessionId": "sess-1771661592429"
+  }
+]

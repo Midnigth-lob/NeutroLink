@@ -1,0 +1,75 @@
+[
+  {
+    "id": "srv-1771660840256",
+    "name": "test",
+    "owner": "Dev",
+    "description": "",
+    "icon": null,
+    "roles": [
+      {
+        "id": "role-owner-1771660840256",
+        "name": "Owner",
+        "color": "#f59e0b",
+        "permissions": [
+          "MANAGE_SERVER",
+          "MANAGE_CHANNELS",
+          "MANAGE_ROLES",
+          "SEND_MESSAGES",
+          "KICK_MEMBERS"
+        ]
+      },
+      {
+        "id": "role-1771661209637",
+        "name": "test",
+        "color": "#ff0fdf",
+        "permissions": [
+          "ADMINISTRATOR",
+          "VIEW_LOGS",
+          "INVITE_USERS",
+          "SEND_MESSAGES",
+          "PIN_MESSAGES",
+          "KICK_MEMBERS",
+          "MUTE_MEMBERS"
+        ]
+      }
+    ],
+    "channels": [
+      {
+        "id": "ch-gen-1771660840256",
+        "name": "general",
+        "type": "text"
+      }
+    ],
+    "members": [
+      {
+        "username": "Dev",
+        "roles": [
+          "role-owner-1771660840256"
+        ]
+      }
+    ],
+    "invites": [
+      {
+        "code": "1WY28W",
+        "generatedBy": "Dev",
+        "maxUses": null,
+        "uses": 0,
+        "expires": null
+      },
+      {
+        "code": "5WE5BX",
+        "generatedBy": "Dev",
+        "maxUses": null,
+        "uses": 0,
+        "expires": null
+      },
+      {
+        "code": "9D4E27",
+        "generatedBy": "Dev",
+        "maxUses": 5,
+        "uses": 0,
+        "expires": "2026-02-22T08:06:58.272Z"
+      }
+    ]
+  }
+]

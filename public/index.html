@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>NeutroLink | Secure Access</title>
+</head>
+<body>
+    <img id="background-image" src="/assets/background.webp" alt="" onerror="this.style.opacity='0'">
+    
+    <main class="MainCard">
+        <h1 class="Title">NeutroLink</h1>
+        <p class="Subtitle" id="ViewSubtitle">Bienvenido de nuevo. Por favor, ingresa tus credenciales.</p>
+
+        <div class="FormGroup">
+            <div class="InputWrapper">
+                <input type="text" id="username" placeholder="Nombre de usuario" autocomplete="username">
+            </div>
+            <div class="InputWrapper">
+                <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password">
+            </div>
+        </div>
+
+        <div class="logins">
+            <button id="LoginBtn">Iniciar Sesión</button>
+            <button id="RegisterBtn" class="hidden">Registrarse</button>
+        </div>
+
+        <p class="ToggleText" id="ViewToggle">
+            ¿No tienes una cuenta? <button class="ToggleBtn" id="SwitchToRegister">Regístrate</button>
+        </p>
+    </main>
+
+    <script src="./script/login.js"></script>
+</body>
+</html>

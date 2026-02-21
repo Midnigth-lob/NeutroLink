@@ -1,0 +1,998 @@
+:root {
+    --primary: #10b981;
+    --primary-dark: #059669;
+    --bg-dark: #09090b;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-white: #fafafa;
+    --text-muted: #a1a1aa;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-dark);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+    color: var(--text-white);
+    overflow: hidden;
+}
+
+#background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    filter: brightness(0.4);
+    transition: opacity 1s ease;
+}
+
+.MainCard {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.Title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #10b981, #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.Subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+}
+
+.FormGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.InputWrapper {
+    position: relative;
+}
+
+input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 0.75rem;
+    color: var(--text-white);
+    outline: none;
+    transition: all 0.2s;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.logins {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#LoginBtn {
+    background: var(--primary);
+    color: #000;
+}
+
+#LoginBtn:hover {
+    background: #34d399;
+    transform: translateY(-1px);
+}
+
+#RegisterBtn {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-white);
+}
+
+#RegisterBtn:hover {
+    background: var(--glass-bg);
+}
+
+.ToggleText {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.ToggleBtn {
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 600;
+    background: none;
+    border: none;
+    width: auto;
+    padding: 0;
+    display: inline;
+}
+
+.ToggleBtn:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Toast System */
+#toast-container {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 1000;
+}
+
+.toast {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    color: var(--text-white);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 300px;
+    animation: toastIn 0.3s ease-out forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.toast.success {
+    border-left: 4px solid var(--primary);
+}
+
+.toast.error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast.warning {
+    border-left: 4px solid #f59e0b;
+}
+
+@keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.fade-out {
+    animation: toastOut 0.3s ease-in forwards;
+}
+
+@keyframes toastOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.toast-progress-fill {
+    height: 100%;
+    background: currentColor;
+    width: 100%;
+    transform-origin: left;
+}
+
+/* Profile Styles */
+.ProfileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.InfoItem label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.InfoItem p {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    box-shadow: 0 0 8px var(--primary);
+}
+
+
+/* Dashboard Layout */
+.DashboardLayout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-dark);
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+/* Server Rail */
+.ServerRail {
+    width: 72px;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 8px;
+    border-right: 1px solid var(--glass-border);
+}
+
+.ServerIcon {
+    width: 48px;
+    height: 48px;
+    background: var(--glass-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--text-white);
+}
+
+.ServerIcon:hover, .ServerIcon.active {
+    border-radius: 16px;
+    background: var(--primary);
+    color: #000;
+}
+
+.ServerDivider {
+    width: 32px;
+    height: 2px;
+    background: var(--glass-border);
+    margin: 4px 0;
+}
+
+/* Sidebar */
+.Sidebar {
+    width: 240px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--glass-border);
+}
+
+.SidebarHeader {
+    padding: 0 1rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.SidebarContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.SidebarGroup {
+    margin-bottom: 1.5rem;
+}
+
+.SidebarLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Main Content Area */
+.ChatArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.ChatHeader {
+    min-height: 48px;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    font-weight: 600;
+}
+
+.MessageList {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ChatInputArea {
+    padding: 0 1rem 1.5rem;
+}
+
+.ChatInputWrapper {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.ChatInputWrapper input {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    flex: 1;
+}
+
+.ChatInputWrapper button {
+    width: auto;
+    padding: 6px 16px;
+    border-radius: 6px;
+}
+
+/* User Profile Overlay */
+.UserSection {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.UserAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+
+.UserInfo {
+    flex:1;
+}
+
+/* Professional Message Styles */
+.Message {
+    padding: 6px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-radius: 4px;
+    margin: 1px 0;
+    transition: background 0.1s ease;
+}
+
+.Message:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.MessageHeader {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.MessageHeader span:first-child:hover {
+    text-decoration: underline;
+}
+
+.MessageContent {
+    color: #dcddde;
+    font-size: 0.95rem;
+    line-height: 1.375rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Sidebar & Social Refinement */
+.SocialItem {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    margin: 2px 8px;
+    border-radius: 4px;
+    color: #949ba4;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.SocialItem:hover {
+    background: rgba(78, 80, 88, 0.3);
+    color: #dbdee1;
+}
+
+.SocialItem.active {
+    background: rgba(78, 80, 88, 0.6);
+    color: #fff;
+}
+
+.SocialItem div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.StatusDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-main);
+    box-shadow: 0 0 0 2px var(--bg-main);
+}
+
+.StatusDot.online { background: #23a55a; }
+.StatusDot.idle { background: #f0b232; }
+.StatusDot.dnd { background: #f23f43; }
+.StatusDot.offline { background: #80848e; }
+
+.DeleteAction {
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.SocialItem:hover .DeleteAction {
+    opacity: 0.5;
+}
+
+.DeleteAction:hover {
+    opacity: 1 !important;
+    color: #ef4444;
+}
+
+/* Channels List */
+.ChannelItem {
+    padding: 0.5rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ChannelItem:hover, .ChannelItem.active {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-white);
+}
+
+.ChannelItem.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary);
+}
+
+.ChannelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+/* Messages & Actions */
+.Message {
+    position: relative;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.Message:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.MessageActions {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+    border-radius: 4px;
+    display: none;
+    gap: 4px;
+    padding: 4px;
+    z-index: 10;
+}
+
+.Message:hover .MessageActions {
+    display: flex;
+}
+
+.BtnAction {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-radius: 3px;
+}
+
+.BtnAction:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
+}
+
+.BtnAction.delete:hover {
+    color: #ef4444;
+}
+
+/* Call Overlay */
+#CallOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    height: 80%;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.VideoGrid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+.VideoContainer {
+    background: #1a1a1a;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.CallControls {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.ControlCircle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.ControlCircle.hangup {
+    background: #ef4444;
+}
+
+/* NOTIFICACIONES PROFESIONALES (TOASTS) */
+#ToastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.Toast {
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 250px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    animation: toastSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.Toast.success { border-left: 4px solid var(--primary); }
+.Toast.error { border-left: 4px solid #ef4444; }
+.Toast.social { border-left: 4px solid #3b82f6; }
+
+@keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(50px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* MODALES DE CONFIGURACIÓN */
+.ModalOverlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.SettingsModal {
+    background: var(--bg-dark);
+    width: 95%;
+    max-width: 900px;
+    height: 85vh;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    overflow: hidden;
+    animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalScale {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.SettingsSidebar {
+    width: 240px;
+    background: rgba(255,255,255,0.015);
+    border-right: 1px solid var(--glass-border);
+    padding: 2.5rem 1rem;
+}
+
+.SettingsNav {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: 0.2s;
+}
+
+.SettingsNav.active, .SettingsNav:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    transform: translateX(5px);
+}
+
+.SettingsContent {
+    flex: 1;
+    padding: 3rem;
+    overflow-y: auto;
+}
+
+.SettingsHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+/* ROLES Y MIEMBROS */
+.MemberItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.RoleLabel {
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* SETTINGS TABS & GRID */
+.SettingsGrid {
+    display: grid;
+    gap: 20px;
+}
+
+.StatCard {
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.LogItem {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 8px;
+    color: #b5bac1;
+    transition: background 0.2s;
+}
+
+/* --- DISCORD-STYLE MEMBER LIST (V7.6.1) --- */
+.MemberListSide {
+    width: 240px;
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    animation: sidebarIn 0.3s ease;
+}
+
+.MemberListHeader {
+    padding: 1.5rem 1rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+#MemberListContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.MemberListItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 2px;
+}
+
+.MemberListItem:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.MemberAvatarSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: relative;
+    background: var(--glass-bg);
+}
+
+.MemberName {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.MemberListItem:hover .MemberName {
+    color: var(--text-white);
+}
+
+@keyframes sidebarIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.LogItem:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+.InviteCode {
+    background: #000;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary);
+    font-weight: 700;
+    border: 1px solid var(--primary-muted);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+}
+
+.SettingsNav {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: #949ba4;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.SettingsNav:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #dbdee1;
+}
+
+.SettingsNav.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* PROFILE MODAL */
+#ProfileModal {
+    z-index: 9500;
+}
+
+.ProfileCard {
+    background: var(--bg-dark);
+    width: 400px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.ProfileBanner {
+    height: 100px;
+    background: var(--primary);
+    opacity: 0.2;
+}
+
+.ProfileMain {
+    padding: 20px;
+    padding-top: 0;
+    margin-top: -40px;
+}
+
+.ProfileAvatarLarge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--bg-dark);
+    border: 4px solid var(--bg-dark);
+    margin-bottom: 15px;
+}
+
+.AnonymousMode-active .ProfileAvatarLarge {
+    background: #333;
+    filter: blur(2px);
+}
+
+.ProfileBio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 10px 0;
+    line-height: 1.4;
+}
+
+.StatusDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+.StatusDot.online { background: #22c55e; }
+.StatusDot.privacy { background: #eab308; }
+/* Action Modal Polish */
+.ActionCard {
+    animation: actionPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes actionPop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+#ActionModal .ModalOverlay {
+    background: rgba(0,0,0,0.7);
+}
+
+/* Scrollbar Style */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
