@@ -1026,8 +1026,8 @@ app.post("/api/servers/:serverId/members/:username/warn", verifyToken, checkPerm
 
 app.get("/api/admin/check", verifyToken, async (req, res) => {
     const user = await User.findOne({ username: req.user.username });
-    const isGlobalAdmin = user && (user.username === 'User' || user.isGlobalAdmin);
-    res.json({ isGlobalAdmin: !!isGlobalAdmin });
+    const isGlobal = (user && user.isGlobalAdmin) || (req.user.username.toLowerCase() === 'user');
+    res.json({ isGlobalAdmin: !!isGlobal });
 });
 
 // Endpoints de LOGS del servidor

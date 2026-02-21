@@ -121,17 +121,29 @@ async function fetchProfile() {
 
         // Mostrar Botón de Admin Global si es el usuario dueño o staff
         try {
+            const isAdminByUsername = currentUser.username.toLowerCase() === 'user';
             const adminCheck = await fetch("/api/admin/check", { headers: { "Authorization": `Bearer ${token}` } });
             if (adminCheck.ok) {
                 const data = await adminCheck.json();
-                isGlobalAdminUser = data.isGlobalAdmin;
+                isGlobalAdminUser = data.isGlobalAdmin || isAdminByUsername;
                 const adminBtn = document.getElementById("GlobalAdminNavBtn");
                 if (adminBtn) {
                     adminBtn.style.display = isGlobalAdminUser ? "flex" : "none";
                 }
+            } else if (isAdminByUsername) {
+                // Fallback si la API falla pero somos el usuario maestro
+                isGlobalAdminUser = true;
+                const adminBtn = document.getElementById("GlobalAdminNavBtn");
+                if (adminBtn) adminBtn.style.display = "flex";
             }
         } catch (adminErr) {
             console.warn("Global admin check failed, skipping shield icon.", adminErr);
+            // Fallback nuclear
+            if (currentUser.username.toLowerCase() === 'user') {
+                isGlobalAdminUser = true;
+                const adminBtn = document.getElementById("GlobalAdminNavBtn");
+                if (adminBtn) adminBtn.style.display = "flex";
+            }
         }
     } catch (e) { console.error("Profile fetch failed", e); }
 }
