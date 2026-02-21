@@ -392,14 +392,17 @@ async function savePrivacy() {
 }
 
 async function saveAppearance() {
+    const avatar = document.getElementById("AppearanceAvatar")?.value;
     const body = {
         personalization: {
             theme: document.getElementById("AppearanceTheme")?.value || currentUser.personalization?.theme,
             accent: document.getElementById("AppearanceAccent")?.value || currentUser.personalization?.accent,
-            banner: currentUser.personalization?.banner
+            banner: currentUser.personalization?.banner,
+            avatar: avatar !== undefined ? avatar : currentUser.personalization?.avatar
         }
     };
     await updateProfile(body);
+    await fetchProfile(); // Recargar para ver los cambios inmediatamente
     applyPersonalization();
 }
 
